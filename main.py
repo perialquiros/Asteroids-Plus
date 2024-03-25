@@ -24,6 +24,13 @@ class Game:
 
         #create player at middle of screen
         self.player = Player(self, (WIN_WIDTH/TILESIZE)/2, (WIN_HEIGHT/TILESIZE)/2)
+    
+    def events(self):
+        for event in pygame.event.get():
+            #when you x-out of window, game quits
+            if event.type == pygame.QUIT:
+                self.playing = False
+                self.running = False
 
     def update(self):
         #game loop updates
@@ -39,6 +46,7 @@ class Game:
     def main(self):
         #game loop
         while self.playing:
+            self.events()
             self.update()
             self.draw()
         self.running = False
