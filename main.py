@@ -1,4 +1,3 @@
-#COMMIT1-start
 import pygame
 from sprites import *
 from config import *

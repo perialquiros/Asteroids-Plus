@@ -61,9 +61,3 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_DOWN]:
             self.y_change += PLAYER_SPEED
             self.facing = 'down'
-
-def update(self):
-    pass
-
-def movement(self):
-    pass
