@@ -33,6 +33,34 @@ class Player(pygame.sprite.Sprite):
         #set player's rect x, y positions
         self.rect.x = self.x
         self.rect.y = self.y
+        
+     #update player sprite
+    def update(self):
+
+        #update movement
+        self.movement()
+        #update player rect position based on return value of movement()
+        self.rect.x += self.x_change
+        self.rect.y += self.y_change
+        #reset _change vars
+        self.x_change = 0
+        self.y_change = 0
+
+    #function to make player move based on arrow keys
+    def movement(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.x_change -= PLAYER_SPEED
+            self.facing = 'left'
+        if keys[pygame.K_RIGHT]:
+            self.x_change += PLAYER_SPEED
+            self.facing = 'right'
+        if keys[pygame.K_UP]:
+            self.y_change -= PLAYER_SPEED
+            self.facing = 'up'
+        if keys[pygame.K_DOWN]:
+            self.y_change += PLAYER_SPEED
+            self.facing = 'down'
 
 def update(self):
     pass
