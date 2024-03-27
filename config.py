@@ -10,7 +10,7 @@ FPS = 60
 PLAYER_LAYER = 4 
 
 #player speed (temporary)
-PLAYER_SPEED = 3
+PLAYER_SPEED = 10
 
 #colors
 RED = (255, 0, 0)
