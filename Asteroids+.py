@@ -2,8 +2,14 @@ import pygame
 from sprites import *
 from config import *
 import sys
+from ship import *
 
 class Game:
+    # set the timer for ship spawn
+    spawn_timer = 0
+    spawn_delay = 30
+    ship_exist = False
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -18,7 +24,7 @@ class Game:
         #new game
         self.playing = True
         
-        #take all sprites and bunch them together so we can update all aat once if needed
+        #take all sprites and bunch them together so we can update all at once if needed
         self.all_sprites = pygame.sprite.LayeredUpdates()
 
         #create player at middle of screen
@@ -34,6 +40,17 @@ class Game:
     def update(self):
         #game loop updates
         self.all_sprites.update()
+        self.spawn_timer += 1
+
+        # create the ship based on time interval
+        if self.spawn_timer >= self.spawn_delay * FPS:
+            self.spawn_timer = 0
+            self.spawn_ship()
+            self.ship_exist = True #if destroyed, changes to false
+            # update ship movement
+
+        if self.ship_exist and self.ship is not None:
+            self.ship.move()
 
     #create background screen for game
     def draw(self):
@@ -42,12 +59,18 @@ class Game:
         self.clock.tick(FPS) #update the screen based on FPS
         pygame.display.update()
 
+    def spawn_ship(self):
+        #create the ship
+        self.ship = Ships()
+        self.all_sprites.add(self.ship)
+        
     def main(self):
         #game loop
         while self.playing:
             self.events()
             self.update()
             self.draw()
+
         self.running = False
 
 g = Game() #init Game class
