@@ -13,18 +13,12 @@ The player has three lives to which a life is lost after being hit by an asteroi
 As the time of the playthrough increases, so does the difficulty, and once all three lives are 
 lost, the game ends. 
 
-## How to run
+## How to Install and Run
 Provide here instructions on how to use your application.   
 - Download the latest binary from the Release section on the right on GitHub.  
-- On the command line uncompress using
-```
-tar -xzf  
-```
-- On the command line run with
-```
-./hello
-```
-- You will see Hello World! on your terminal. 
+- In your files find the Asteriods+ Folder
+- There you will find *Asteroids+.exe*
+- Run the executable file and enjoy playing!
 
 ## How to contribute
 Follow this project board to know the latest status of the project: [http://...]([http://...])  
