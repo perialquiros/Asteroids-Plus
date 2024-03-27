@@ -44,22 +44,58 @@ class Ships(pygame.sprite.Sprite):
     def move(self):
         if self.direction == 'top':
             self.rect.y -= 1
+            if self.rect.bottom < 0: # check if the ship exits the top edge
+                self.rect.y = WIN_HEIGHT
+                self.rect.x = WIN_WIDTH - self.rect.x
         elif self.direction == 'bottom':
             self.rect.y += 1
+            if self.rect.top > WIN_HEIGHT:
+                self.rect.y = 0
+                self.rect.x = WIN_WIDTH - self.rect.x
         elif self.direction == 'left':
             self.rect.x -= 1
+            if self.rect.right < 0:
+                self.rect.y = WIN_HEIGHT - self.rect.y
+                self.rect.x = WIN_WIDTH
         elif self.direction == 'right':
             self.rect.x += 1
+            if self.rect.left > WIN_WIDTH:
+                self.rect.y = WIN_HEIGHT - self.rect.y
+                self.rect.x = 0
         elif self.direction == 'top_left':
             self.rect.x -= 1
             self.rect.y -= 1
+            if self.rect.bottom < 0: 
+                self.rect.y = WIN_HEIGHT
+                self.rect.x = WIN_WIDTH - self.rect.x
+            if self.rect.right < 0:
+                self.rect.y = WIN_HEIGHT - self.rect.y
+                self.rect.x = WIN_WIDTH
         elif self.direction == 'top_right':
             self.rect.x += 1
             self.rect.y -= 1
+            if self.rect.bottom < 0: 
+                self.rect.y = WIN_HEIGHT
+                self.rect.x = WIN_WIDTH - self.rect.x
+            if self.rect.left > WIN_WIDTH:
+                self.rect.y = WIN_HEIGHT - self.rect.y
+                self.rect.x = 0
         elif self.direction == 'bottom_left':
             self.rect.x -= 1
             self.rect.y += 1
+            if self.rect.top > WIN_HEIGHT:
+                self.rect.y = 0
+                self.rect.x = WIN_WIDTH - self.rect.x
+            if self.rect.right < 0:
+                self.rect.y = WIN_HEIGHT - self.rect.y
+                self.rect.x = WIN_WIDTH
         elif self.direction == 'bottom_right':
             self.rect.x += 1
             self.rect.y += 1
+            if self.rect.top > WIN_HEIGHT:
+                self.rect.y = 0
+                self.rect.x = WIN_WIDTH - self.rect.x
+            if self.rect.left > WIN_WIDTH:
+                self.rect.y = WIN_HEIGHT - self.rect.y
+                self.rect.x = 0
            
