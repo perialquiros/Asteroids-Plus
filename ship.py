@@ -8,12 +8,15 @@ import sys
 
 
 class Ships(pygame.sprite.Sprite):
-    # create the ship
-    def __init__(self):
-        pygame.sprite.pygame.sprite.Sprite.__init__(self)
 
+    # create the ship
+    def __init__(self, all_sprites, bullets):
+        super().__init__()
+        self.all_sprites = all_sprites
+        self.bullets = bullets
+        
         # adjust imported image
-        og_image = pygame.image.load('ship.png')
+        og_image = pygame.image.load('Images/ship.png')
         self.image = pygame.transform.scale(og_image, (30,20))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y, self.direction = self.rand_entry()
@@ -98,4 +101,35 @@ class Ships(pygame.sprite.Sprite):
             if self.rect.left > WIN_WIDTH:
                 self.rect.y = WIN_HEIGHT - self.rect.y
                 self.rect.x = 0
+    
+    def shoot_bullet(self, player_rect):
+        # Calculate the direction vector towards the player
+        dx = player_rect.centerx - self.rect.centerx
+        dy = player_rect.centery - self.rect.centery
+        distance = max(abs(dx), abs(dy), 1)  # Avoid division by zero
+        direction = dx / distance, dy / distance
+
+        # Spawn the bullet at the ship's current position
+        bullet = Bullet(self.rect.centerx, self.rect.centery, direction)
+        self.all_sprites.add(bullet)
+        self.bullets.add(bullet)
+
+class Bullet(pygame.sprite.Sprite):
+    
+    # initialize bullet as a new sprite
+    def __init__(self, x, y, direction):
+        super().__init__()
+
+        # adjust imported image
+        bullet_image = pygame.image.load('Images/bullet.png')
+        self.image = pygame.transform.scale(bullet_image, (15,8))
+        self.rect = self.image.get_rect(center=(x, y)) #spawns bullet at the location of the ship
+        self.direction = direction
+        self.speed = PLAYER_SPEED/2
+    
+    def update(self):
+        # continue to move in the direction of the player
+        self.rect.x += self.direction[0] * self.speed
+        self.rect.y += self.direction[1] * self.speed
+
            

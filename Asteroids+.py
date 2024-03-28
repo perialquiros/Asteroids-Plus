@@ -6,8 +6,10 @@ from ship import *
 
 class Game:
     # set the timer for ship spawn
-    spawn_timer = 0
-    spawn_delay = 30
+    spawn_timer_ship = 0
+    spawn_timer_bullet = 0
+    spawn_delay_ship = 30
+    spawn_delay_bullet = 15
     ship_exist = False
 
     def __init__(self):
@@ -18,6 +20,7 @@ class Game:
         self.running = True
 
         #init sprite sheets
+        self.bullets = pygame.sprite.Group()
 
     def new(self):
         
@@ -40,17 +43,23 @@ class Game:
     def update(self):
         #game loop updates
         self.all_sprites.update()
-        self.spawn_timer += 1
+        self.spawn_timer_ship += 1
+        self.spawn_timer_bullet += 1
 
         # create the ship based on time interval
-        if self.spawn_timer >= self.spawn_delay * FPS:
-            self.spawn_timer = 0
+        if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
+            self.spawn_timer_ship = 0
             self.spawn_ship()
             self.ship_exist = True #if destroyed, changes to false
-            # update ship movement
-
+        
+        # update ship movement
         if self.ship_exist and self.ship is not None:
             self.ship.move()
+
+        #start shooting
+        if self.ship_exist and self.spawn_timer_bullet >= self.spawn_delay_bullet * FPS:
+            self.ship.shoot_bullet(self.player.rect)
+            self.spawn_timer_bullet = 0
 
     #create background screen for game
     def draw(self):
@@ -61,7 +70,7 @@ class Game:
 
     def spawn_ship(self):
         #create the ship
-        self.ship = Ships()
+        self.ship = Ships(self.all_sprites, self.bullets)
         self.all_sprites.add(self.ship)
         
     def main(self):
