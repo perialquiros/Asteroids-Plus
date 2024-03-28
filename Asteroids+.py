@@ -84,7 +84,7 @@ class Game:
 
     def spawn_ship(self):
         # Create a new ship and add it to the groups
-        ship = Ships(self.all_sprites, self.bullets)
+        ship = Ships(self.all_sprites, self.ship_bullets)
         self.all_sprites.add(ship)
         self.ships.add(ship)
         
