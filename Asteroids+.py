@@ -22,6 +22,7 @@ class Game:
 
         #init sprite sheets
         self.bullets = pygame.sprite.Group()
+        self.ships = pygame.sprite.Group()
 
     def new(self):
         
@@ -44,6 +45,9 @@ class Game:
     def update(self):
         #game loop updates
         self.all_sprites.update()
+        #update direction
+        for bullet in self.bullets:
+            bullet.update_dir(self.player)
         self.spawn_timer_ship += 1
         self.spawn_timer_bullet += 1
         self.game_timer += 1
@@ -55,17 +59,18 @@ class Game:
             self.ship_exist = True #if destroyed, changes to false
         
         # update ship movement
-        if self.ship_exist:
-            self.ship.move()
+        for ship in self.ships:
+            ship.move()
 
-        # start shooting
-        if self.ship_exist and self.spawn_timer_bullet >= self.spawn_delay_bullet * FPS:
-            self.ship.shoot_bullet(self.player)
+        #start shooting for all ships
+        if self.spawn_timer_bullet >= self.spawn_delay_bullet * FPS:
+            for ship in self.ships:
+                ship.shoot_bullet(self.player)
             self.spawn_timer_bullet = 0
         
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
         if self.game_timer >= 60 and self.spawn_delay_ship > 15 and self.spawn_delay_bullet > 10:
-            #add a screen display of difficult level currently
+            #add a screen display of difficult level currently - to do
             self.spawn_delay_ship -= 5
             self.spawn_delay_bullet -= 5
             self.game_timer = 0
@@ -78,9 +83,10 @@ class Game:
         pygame.display.update()
 
     def spawn_ship(self):
-        #create the ship
-        self.ship = Ships(self.all_sprites, self.bullets)
-        self.all_sprites.add(self.ship)
+        # Create a new ship and add it to the groups
+        ship = Ships(self.all_sprites, self.bullets)
+        self.all_sprites.add(ship)
+        self.ships.add(ship)
         
     def main(self):
         #game loop

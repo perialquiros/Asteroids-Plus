@@ -108,9 +108,6 @@ class Ships(pygame.sprite.Sprite):
         self.all_sprites.add(bullet)
         self.bullets.add(bullet)
 
-        #update direction
-        bullet.update_dir(player)
-        
 class Bullet(pygame.sprite.Sprite):
     
     # initialize bullet as a new sprite
@@ -122,11 +119,26 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(bullet_image, (40,30))
         self.rect = self.image.get_rect(center=(x, y)) #spawns bullet at the location of the ship
         self.speed = PLAYER_SPEED/2
+        self.direction = 0, 0
     
     def update(self):
         # continue to move in the direction of the player
         self.rect.x = self.rect.x + self.direction[0] * self.speed
         self.rect.y = self.rect.y + self.direction[1] * self.speed
+
+        # leaves the screen = reenters from the opposite side
+        if self.rect.bottom < 0: 
+            self.rect.y = WIN_HEIGHT
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.right < 0:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = WIN_WIDTH
+        if self.rect.top > WIN_HEIGHT:
+            self.rect.y = 0
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.left > WIN_WIDTH:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = 0
 
     def update_dir(self, player):
         # Calculate the direction vector towards the player
