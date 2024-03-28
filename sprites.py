@@ -29,6 +29,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
+        #acceleration
+        self.velocity = pygame.math.Vector2(0, 0)  # Initialize velocity vector
+        self.acceleration = 0.3  # Adjust as needed for acceleration rate
+        self.deceleration = 0.97  # Adjust as needed for deceleration rate
+
         #temporary value at init
         self.x_change = 0
         self.y_change = 0
@@ -41,12 +46,20 @@ class Player(pygame.sprite.Sprite):
         #update movement
         self.rotate()
         self.movement()
+        #update acceleration
+        self.rect.center += self.velocity  # Apply velocity to the player's position
+        self.decelerate()  # Apply deceleration to slow down the player over time
         #update player rect position based on return value of movement()
         self.rect.x += self.x_change
         self.rect.y += self.y_change
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
+
+    def decelerate(self):
+        self.velocity *= self.deceleration
+        if self.velocity.length() < 0.1:  # If the velocity is very small, make it zero
+            self.velocity = pygame.math.Vector2(0, 0)
 
     def turnRight(self):
         self.angle += 5 # Adjust rotation speed as needed
@@ -60,8 +73,8 @@ class Player(pygame.sprite.Sprite):
 
     def moveForward(self):
         rad_angle = math.radians(self.angle)  # Convert angle to radians
-        self.x_change += PLAYER_SPEED * math.cos(rad_angle)
-        self.y_change += PLAYER_SPEED * math.sin(rad_angle)
+        acceleration_vector = pygame.math.Vector2(math.cos(rad_angle), math.sin(rad_angle)) * self.acceleration
+        self.velocity += acceleration_vector
 
     def rotate(self):
         original_center = self.rect.center  # Save the sprite's center
