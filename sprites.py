@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.y_change = 0
 
         # create player (TEMPORARY look)
-        self.image = pygame.image.load('ships/ship-a1.png').convert_alpha()
+        self.image = pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha()
 
         # self.image.get_rect() returns a new rectangle covering the entire surface of `self.image`. This rectangle (rect) is used to position the sprite on the screen.
         # it's important for collision detection and rendering the sprite at its current position.
@@ -94,7 +94,7 @@ class Player(pygame.sprite.Sprite):
 
     def rotate(self):
         original_center = self.rect.center  # Save the sprite's center
-        self.image = pygame.transform.rotate(pygame.image.load('ships/ship-a1.png').convert_alpha(), -self.angle)  # Rotate the original image
+        self.image = pygame.transform.rotate(pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha(), -self.angle)  # Rotate the original image
         self.rect = self.image.get_rect(center=original_center)  # Create a new rect with the old center
 
     #function to make player move based on arrow keys
