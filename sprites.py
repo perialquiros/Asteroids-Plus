@@ -19,10 +19,6 @@ class Player(pygame.sprite.Sprite):
         self.width = TILESIZE
         self.height = TILESIZE
 
-        # temporary value at init
-        self.x_change = 0
-        self.y_change = 0
-
         # create player (TEMPORARY look)
         self.image = pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha()
 
