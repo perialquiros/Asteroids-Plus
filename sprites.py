@@ -31,8 +31,8 @@ class Player(pygame.sprite.Sprite):
 
         #acceleration
         self.velocity = pygame.math.Vector2(0, 0)  # Initialize velocity vector
-        self.acceleration = 0.3  # Adjust as needed for acceleration rate
-        self.deceleration = 0.97  # Adjust as needed for deceleration rate
+        self.acceleration = 0.2  # Adjust as needed for acceleration rate
+        self.deceleration = 0.98  # Adjust as needed for deceleration rate
 
         #temporary value at init
         self.x_change = 0
@@ -49,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
         self.decelerate()  # Apply deceleration to slow down the player over time
+        self.wrap_around_screen()
         #update player rect position based on return value of movement()
         self.rect.x += self.x_change
         self.rect.y += self.y_change
@@ -56,18 +57,28 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
 
+    def wrap_around_screen(self):
+        if self.rect.right < 0:
+            self.rect.left = WIN_WIDTH
+        if self.rect.left > WIN_WIDTH:
+            self.rect.right = 0
+        if self.rect.bottom < 0:
+            self.rect.top = WIN_HEIGHT
+        if self.rect.top > WIN_HEIGHT:
+            self.rect.bottom = 0
+
     def decelerate(self):
         self.velocity *= self.deceleration
         if self.velocity.length() < 0.1:  # If the velocity is very small, make it zero
             self.velocity = pygame.math.Vector2(0, 0)
 
     def turnRight(self):
-        self.angle += 5 # Adjust rotation speed as needed
+        self.angle += 2.5 # Adjust rotation speed as needed
         if self.angle > 360:
             self.angle -= 360
 
     def turnLeft(self):
-        self.angle -= 5  # Adjust rotation speed as needed
+        self.angle -= 2.5  # Adjust rotation speed as needed
         if self.angle < 0:
             self.angle += 360
 
