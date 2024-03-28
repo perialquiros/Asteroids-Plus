@@ -6,6 +6,7 @@ from ship import *
 
 class Game:
     # set the timer for ship spawn
+    game_timer = 0
     spawn_timer_ship = 0
     spawn_timer_bullet = 0
     spawn_delay_ship = 30
@@ -45,6 +46,7 @@ class Game:
         self.all_sprites.update()
         self.spawn_timer_ship += 1
         self.spawn_timer_bullet += 1
+        self.game_timer += 1
 
         # create the ship based on time interval
         if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
@@ -53,13 +55,20 @@ class Game:
             self.ship_exist = True #if destroyed, changes to false
         
         # update ship movement
-        if self.ship_exist and self.ship is not None:
+        if self.ship_exist:
             self.ship.move()
 
-        #start shooting
+        # start shooting
         if self.ship_exist and self.spawn_timer_bullet >= self.spawn_delay_bullet * FPS:
-            self.ship.shoot_bullet(self.player.rect)
+            self.ship.shoot_bullet(self.player)
             self.spawn_timer_bullet = 0
+        
+        # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
+        if self.game_timer >= 60 and self.spawn_delay_ship > 15 and self.spawn_delay_bullet > 10:
+            #add a screen display of difficult level currently
+            self.spawn_delay_ship -= 5
+            self.spawn_delay_bullet -= 5
+            self.game_timer = 0
 
     #create background screen for game
     def draw(self):
