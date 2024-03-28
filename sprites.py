@@ -48,12 +48,12 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
 
-    def turnLeft(self):
+    def turnRight(self):
         self.angle += 5 # Adjust rotation speed as needed
         if self.angle > 360:
             self.angle -= 360
 
-    def turnRight(self):
+    def turnLeft(self):
         self.angle -= 5  # Adjust rotation speed as needed
         if self.angle < 0:
             self.angle += 360
