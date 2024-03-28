@@ -11,7 +11,8 @@ class Game:
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
         self.running = True
 
-        #init sprite sheets
+        #init ship images
+        
 
     def new(self):
         
