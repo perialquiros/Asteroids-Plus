@@ -21,7 +21,7 @@ class Game:
         self.running = True
 
         #init sprite sheets
-        self.bullets = pygame.sprite.Group()
+        self.ship_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
 
     def new(self):
@@ -46,7 +46,7 @@ class Game:
         #game loop updates
         self.all_sprites.update()
         #update direction
-        for bullet in self.bullets:
+        for bullet in self.ship_bullets:
             bullet.update_dir(self.player)
         self.spawn_timer_ship += 1
         self.spawn_timer_bullet += 1

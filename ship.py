@@ -104,11 +104,11 @@ class Ships(pygame.sprite.Sprite):
     
     def shoot_bullet(self, player):
         # spawn the bullet at the ship's current position
-        bullet = Bullet(self.rect.centerx, self.rect.centery)
+        bullet = ship_bullet(self.rect.centerx, self.rect.centery)
         self.all_sprites.add(bullet)
         self.bullets.add(bullet)
 
-class Bullet(pygame.sprite.Sprite):
+class ship_bullet(pygame.sprite.Sprite):
     
     # initialize bullet as a new sprite
     def __init__(self, x, y):
