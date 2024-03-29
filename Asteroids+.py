@@ -9,9 +9,11 @@ class Game:
     # set the timer for ship spawn
     game_timer = 0
     spawn_timer_ship = 0
-    spawn_timer_bullet = 0
+    spawn_timer_reg_bullet = 0
+    spawn_timer_sp_bullet = 0
     spawn_delay_ship = 30
-    spawn_delay_bullet = 15
+    spawn_delay_reg_bullet = 20
+    spawn_delay_sp_bullet = 60
     ship_exist = False
 
     asteroid_timer = 0
@@ -25,7 +27,8 @@ class Game:
         self.running = True
 
         #init sprite sheets
-        self.ship_bullets = pygame.sprite.Group()
+        self.ship_sp_bullets = pygame.sprite.Group()
+        self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
 
@@ -50,13 +53,21 @@ class Game:
     def update(self):
         #game loop updates
         self.all_sprites.update()
-        #update direction
-        for bullet in self.ship_bullets:
-            bullet.update_dir(self.player)
+
         self.spawn_timer_ship += 1
-        self.spawn_timer_bullet += 1
+        self.spawn_timer_sp_bullet += 1
+        self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
 
+        #update direction for special bullet
+        for bullet in self.ship_sp_bullets:
+            bullet.update_dir(self.player)
+            self.spawn_sp_bullet = 0
+
+        # move the ship
+        for ship in self.ships:
+            ship.move()
+            
         self.asteroid_timer += 1
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
@@ -69,21 +80,25 @@ class Game:
             self.spawn_ship()
             self.ship_exist = True #if destroyed, changes to false
         
-        # update ship movement
-        for ship in self.ships:
-            ship.move()
-
-        #start shooting for all ships
-        if self.spawn_timer_bullet >= self.spawn_delay_bullet * FPS:
+        # start shooting for special bullet
+        if self.ship_exist and self.spawn_timer_sp_bullet >= self.spawn_delay_sp_bullet * FPS:
             for ship in self.ships:
-                ship.shoot_bullet(self.player)
-            self.spawn_timer_bullet = 0
+                ship.shoot_sp_bullet()
+            self.spawn_timer_sp_bullet = 0
         
+        # Start shooting for regular bullet
+        if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
+            for ship in self.ships:
+                ship.shoot_reg_bullet()
+            self.spawn_timer_reg_bullet = 0
+
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
-        if self.game_timer >= 60 and self.spawn_delay_ship > 15 and self.spawn_delay_bullet > 10:
+        if self.game_timer >= 60 and self.spawn_delay_sp_bullet > 20:
             #add a screen display of difficult level currently - to do
-            self.spawn_delay_ship -= 5
-            self.spawn_delay_bullet -= 5
+            if self.spawn_delay_ship > 15:
+                self.spawn_delay_ship -= 5
+                self.spawn_delay_reg_bullet -= 5
+            self.spawn_delay_sp_bullet -= 5
             self.game_timer = 0
 
     #create background screen for game
@@ -95,7 +110,7 @@ class Game:
 
     def spawn_ship(self):
         # Create a new ship and add it to the groups
-        ship = Ships(self.all_sprites, self.ship_bullets)
+        ship = Ships(self.all_sprites, self.ship_sp_bullets, self.ship_reg_bullets)
         self.all_sprites.add(ship)
         self.ships.add(ship)
         

@@ -10,10 +10,11 @@ import sys
 class Ships(pygame.sprite.Sprite):
 
     # create the ship
-    def __init__(self, all_sprites, bullets):
+    def __init__(self, all_sprites, sp_bullets, reg_bullets):
         super().__init__()
         self.all_sprites = all_sprites
-        self.bullets = bullets
+        self.ship_sp_bullets = sp_bullets
+        self.ship_reg_bullets = reg_bullets
         
         # adjust imported image
         og_image = pygame.image.load('Images/ship.png')
@@ -102,13 +103,19 @@ class Ships(pygame.sprite.Sprite):
                 self.rect.y = WIN_HEIGHT - self.rect.y
                 self.rect.x = 0
     
-    def shoot_bullet(self, player):
-        # spawn the bullet at the ship's current position
-        bullet = ship_bullet(self.rect.centerx, self.rect.centery)
-        self.all_sprites.add(bullet)
-        self.bullets.add(bullet)
+    def shoot_reg_bullet(self):
+        # Spawn regular bullet at the ship's current position, randomly flies
+        reg_bullet = ship_reg_bullet(self.rect.centerx, self.rect.centery)
+        self.all_sprites.add(reg_bullet)
+        self.ship_reg_bullets.add(reg_bullet)
 
-class ship_bullet(pygame.sprite.Sprite):
+    def shoot_sp_bullet(self):
+        # spawn special bullet at the ship's current position, targets the player
+        sp_bullet = ship_sp_bullet(self.rect.centerx, self.rect.centery)
+        self.all_sprites.add(sp_bullet)
+        self.ship_sp_bullets.add(sp_bullet)
+
+class ship_sp_bullet(pygame.sprite.Sprite):
     
     # initialize bullet as a new sprite
     def __init__(self, x, y):
@@ -146,3 +153,34 @@ class ship_bullet(pygame.sprite.Sprite):
         dy = player.rect.centery - self.rect.centery
         distance = max(abs(dx), abs(dy), 1)  # Avoid division by zero
         self.direction = dx / distance, dy / distance
+
+class ship_reg_bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+
+        # Load bullet image and scale it
+        bullet_image = pygame.image.load('Images/bullet.png')
+        self.image = pygame.transform.scale(bullet_image, (40, 30))
+        self.rect = self.image.get_rect(center=(x, y))
+        self.speed = PLAYER_SPEED / 2
+        self.x_change = random.randint(-1, 1)
+        self.y_change = random.randint(-1, 1)
+
+    def update(self):
+        # update bullet position based on direction and speed
+        self.rect.x += self.x_change * self.speed
+        self.rect.y += self.speed * self.y_change
+
+        # leaves the screen = reenters from the opposite side
+        if self.rect.bottom < 0: 
+            self.rect.y = WIN_HEIGHT
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.right < 0:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = WIN_WIDTH
+        if self.rect.top > WIN_HEIGHT:
+            self.rect.y = 0
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.left > WIN_WIDTH:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = 0
