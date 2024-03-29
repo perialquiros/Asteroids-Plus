@@ -3,6 +3,7 @@ from sprites import *
 from config import *
 import sys
 from ship import *
+from asteroid import *
 
 class Game:
     # set the timer for ship spawn
@@ -15,6 +16,9 @@ class Game:
     spawn_delay_sp_bullet = 60
     ship_exist = False
 
+    asteroid_timer = 0
+    asteroid_spawn_delay = 5
+
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -26,6 +30,7 @@ class Game:
         self.ship_sp_bullets = pygame.sprite.Group()
         self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
+        self.asteroids = pygame.sprite.Group()
 
     def new(self):
         
@@ -62,6 +67,12 @@ class Game:
         # move the ship
         for ship in self.ships:
             ship.move()
+            
+        self.asteroid_timer += 1
+
+        if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
+            self.spawn_asteroid()
+            self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
         # create the ship based on time interval
         if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
@@ -103,6 +114,11 @@ class Game:
         self.all_sprites.add(ship)
         self.ships.add(ship)
         
+    def spawn_asteroid(self):
+        asteroid = Asteroid(self, 0, 0)
+        self.all_sprites.add(asteroid)
+        self.asteroids.add(asteroid)
+
     def main(self):
         #game loop
         while self.playing:

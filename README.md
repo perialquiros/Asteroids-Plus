@@ -1,4 +1,4 @@
-# Asteriod+ : A Replica of Asteriod
+# Asteriods+ : A Replica of Asteriods
 ### Jericho Orienza, Prince Nahar, Amy Ollomani, Iris Ye
 ![image](https://github.com/cis3296s24/prj--asteroid-replica/assets/93217801/ea454382-a95f-4d4f-930e-7448efa29b34)
 

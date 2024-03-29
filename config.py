@@ -1,16 +1,23 @@
-WIN_WIDTH = 672
-WIN_HEIGHT = 672
+WIN_WIDTH = 896
+WIN_HEIGHT = 896
 TILESIZE = 16
 #42 by 42 tile size
+
+#Asteroid Sizes
+BIG_ASTEROID_SIZE = TILESIZE * 6
+MED_ASTEROID_SIZE = TILESIZE * 3
+SM_ASTEROID_SIZE = TILESIZE
 
 #target FPS
 FPS = 60
 
 #layers
-PLAYER_LAYER = 4 
+PLAYER_LAYER = 4
+ASTEROID_LAYER = 3
 
-#player speed (temporary)
+# speeds (temporary)
 PLAYER_SPEED = 3
+ASTEROID_SPEED = 2
 
 #colors
 RED = (255, 0, 0)
