@@ -18,7 +18,7 @@ class Ships(pygame.sprite.Sprite):
         
         # adjust imported image
         og_image = pygame.image.load('Images/ship.png')
-        self.image = pygame.transform.scale(og_image, (30,20))
+        self.image = pygame.transform.scale(og_image, (40,30))
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y, self.direction = self.rand_entry()
 
@@ -123,7 +123,7 @@ class ship_sp_bullet(pygame.sprite.Sprite):
 
         # adjust imported image
         bullet_image = pygame.image.load('Images/bullet.png')
-        self.image = pygame.transform.scale(bullet_image, (40,30))
+        self.image = pygame.transform.scale(bullet_image, (60,45))
         self.rect = self.image.get_rect(center=(x, y)) #spawns bullet at the location of the ship
         self.speed = PLAYER_SPEED/2
         self.direction = 0, 0
@@ -160,7 +160,7 @@ class ship_reg_bullet(pygame.sprite.Sprite):
 
         # Load bullet image and scale it
         bullet_image = pygame.image.load('Images/bullet.png')
-        self.image = pygame.transform.scale(bullet_image, (40, 30))
+        self.image = pygame.transform.scale(bullet_image, (60, 45))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = PLAYER_SPEED / 2
         self.x_change = random.randint(-1, 1)

@@ -93,9 +93,9 @@ class Game:
             self.spawn_timer_reg_bullet = 0
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
-        if self.game_timer >= 60 and self.spawn_delay_sp_bullet > 20:
+        if self.game_timer >= 60 and self.spawn_delay_sp_bullet > 30:
             #add a screen display of difficult level currently - to do
-            if self.spawn_delay_ship > 15:
+            if self.spawn_delay_ship > 25:
                 self.spawn_delay_ship -= 5
                 self.spawn_delay_reg_bullet -= 5
             self.spawn_delay_sp_bullet -= 5
