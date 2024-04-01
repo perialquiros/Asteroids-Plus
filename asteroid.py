@@ -6,22 +6,30 @@ import random
 
 class Asteroid(pygame.sprite.Sprite):
 
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, size):
 
         self.game = game
         self._layer = ASTEROID_LAYER
-        self.groups = self.game.all_sprites
+        self.groups = self.game.all_sprites, self.game.enemies
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         self.x = x * TILESIZE
         self.y = y * TILESIZE
 
-        self.width = BIG_ASTEROID_SIZE
-        self.height = BIG_ASTEROID_SIZE
+        if size == BIG_ASTEROID_SIZE:
+            image = random.choice(['Images/asteroid-big/big-a.png', 'Images/asteroid-big/big-b.png', 'Images/asteroid-big/big-c.png'])
+        elif size == MED_ASTEROID_SIZE:
+            image = random.choice(['Images/asteroid-med/med-a.png', 'Images/asteroid-med/med-b.png', 'Images/asteroid-med/med-c.png'])
+        else:
+            image = random.choice(['Images/asteroid-small/small-a.png', 'Images/asteroid-small/small-b.png', 'Images/asteroid-small/small-c.png'])
 
-        self.image = pygame.image.load('Images/asteroid-big/big-a.png')
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (size, size))
 
         self.rect = self.image.get_rect()
+
+        self.width = size
+        self.height = size
 
          # Initialize movement direction based on spawn side
         self.rect.x, self.rect.y, self.move_direction = self.rand_entry()

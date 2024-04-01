@@ -12,6 +12,8 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
+        self.lives = PLAYER_LIVES
+
         # player position based on tile
         self.x = x * TILESIZE
         self.y = y * TILESIZE
@@ -20,7 +22,10 @@ class Player(pygame.sprite.Sprite):
         self.height = TILESIZE
 
         # create player (TEMPORARY look)
-        self.image = pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha()
+        self.og_image = pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha()
+        self.image = self.og_image
+        self.damaged_image = pygame.image.load('Images/ships/ship-a/ship-a-damaged.png').convert_alpha()
+        self.damage_loop = 0
 
         # self.image.get_rect() returns a new rectangle covering the entire surface of `self.image`. This rectangle (rect) is used to position the sprite on the screen.
         # it's important for collision detection and rendering the sprite at its current position.
@@ -39,14 +44,15 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
         self.angle = 0
-        
-        
+
      #update player sprite
     def update(self):
-
+        current_time = pygame.time.get_ticks()           
         #update movement
         self.rotate()
         self.movement()
+        #update collision check
+        self.collide_asteroid()
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
         self.decelerate()  # Apply deceleration to slow down the player over time
@@ -57,6 +63,17 @@ class Player(pygame.sprite.Sprite):
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
+
+        # Flickering logic: Change image back and forth if within invulnerability period
+        if current_time <= self.damage_loop + 3000:  # 3000 ms invulnerability
+            if current_time // 250 % 2 == 0:  # Change image every 250 ms
+                self.image = self.damaged_image
+            else:
+                self.image = self.og_image
+        else:
+            self.image = self.og_image  # Outside invulnerability period, use original image
+
+        self.rotate()
 
     def wrap_around_screen(self):
         if self.rect.right < 0:
@@ -74,12 +91,12 @@ class Player(pygame.sprite.Sprite):
             self.velocity = pygame.math.Vector2(0, 0)
 
     def turnRight(self):
-        self.angle += 2.5 # Adjust rotation speed as needed
+        self.angle += 5 # Adjust rotation speed as needed
         if self.angle > 360:
             self.angle -= 360
 
     def turnLeft(self):
-        self.angle -= 2.5  # Adjust rotation speed as needed
+        self.angle -= 5  # Adjust rotation speed as needed
         if self.angle < 0:
             self.angle += 360
 
@@ -90,7 +107,7 @@ class Player(pygame.sprite.Sprite):
 
     def rotate(self):
         original_center = self.rect.center  # Save the sprite's center
-        self.image = pygame.transform.rotate(pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha(), -self.angle)  # Rotate the original image
+        self.image = pygame.transform.rotate(self.image, -self.angle)  # Rotate the original image
         self.rect = self.image.get_rect(center=original_center)  # Create a new rect with the old center
 
     #function to make player move based on arrow keys
@@ -102,3 +119,19 @@ class Player(pygame.sprite.Sprite):
             self.turnRight()
         if keys[pygame.K_UP]:
             self.moveForward()
+
+    def collide_asteroid(self):
+        current_time = pygame.time.get_ticks()
+        for enemy in self.game.enemies:
+            distance = math.sqrt((self.rect.centerx - enemy.rect.centerx) ** 2 + (self.rect.centery - enemy.rect.centery) ** 2)
+            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(enemy.rect.width, enemy.rect.height) / 2 - 2 * TILESIZE
+            
+            # Check if within collision threshold and not currently invulnerable
+            if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
+                self.lives -= 1
+                self.damage_loop = current_time  # Reset invulnerability timer
+                
+                if self.lives <= 0:
+                    self.kill()
+                    self.game.playing = False
+                    break

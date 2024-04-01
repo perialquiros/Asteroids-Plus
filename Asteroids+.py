@@ -39,6 +39,7 @@ class Game:
         
         #take all sprites and bunch them together so we can update all at once if needed
         self.all_sprites = pygame.sprite.LayeredUpdates()
+        self.enemies = pygame.sprite.LayeredUpdates()
 
         #create player at middle of screen
         self.player = Player(self, (WIN_WIDTH/TILESIZE)/2, (WIN_HEIGHT/TILESIZE)/2)
@@ -58,6 +59,9 @@ class Game:
         self.spawn_timer_sp_bullet += 1
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
+        self.asteroid_timer += 1
+
+        self.asteroid_alg()
 
         #update direction for special bullet
         for bullet in self.ship_sp_bullets:
@@ -67,12 +71,6 @@ class Game:
         # move the ship
         for ship in self.ships:
             ship.move()
-            
-        self.asteroid_timer += 1
-
-        if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
-            self.spawn_asteroid()
-            self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
         # create the ship based on time interval
         if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
@@ -103,9 +101,14 @@ class Game:
 
     #create background screen for game
     def draw(self):
-        self.screen.fill(BLACK)
+        self.screen.fill(WHITE)
         self.all_sprites.draw(self.screen) #
         self.clock.tick(FPS) #update the screen based on FPS
+
+        lives_text = self.font.render('Lives: ' + str(self.player.lives), False, BLACK)
+        
+        # Draw the lives text
+        self.screen.blit(lives_text, (10, 10))
         pygame.display.update()
 
     def spawn_ship(self):
@@ -114,10 +117,22 @@ class Game:
         self.all_sprites.add(ship)
         self.ships.add(ship)
         
-    def spawn_asteroid(self):
-        asteroid = Asteroid(self, 0, 0)
+    def spawn_asteroid(self, size):
+        asteroid = Asteroid( self, 0, 0, size)
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
+
+    def asteroid_alg(self):
+        size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
+
+        if self.game_timer >= 30:
+            self.asteroid_spawn_delay = 4
+        if self.game_timer >= 60:
+            self.asteroid_spawn_delay = 3
+
+        if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
+            self.spawn_asteroid(size)
+            self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
     def main(self):
         #game loop
