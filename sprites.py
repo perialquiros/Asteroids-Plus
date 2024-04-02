@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
+        #Player Lives
         self.lives = PLAYER_LIVES
 
         # player position based on tile
@@ -45,34 +46,32 @@ class Player(pygame.sprite.Sprite):
         self.y_change = 0
         self.angle = 0
 
-        
-        self.lives = 3
-
-        self.game = game
         self.player_bullets = self.game.player_bullets
         
         
-     #update player sprite
+    #update player sprite
     def update(self):
-        current_time = pygame.time.get_ticks()           
+        current_time = pygame.time.get_ticks()   
+
         #update movement
         self.rotate()
         self.movement()
-        #update collision check
-        #self.collide_asteroid()
         
         #check collisions
         self.collide(self.game.ship_reg_bullets)
         self.collide(self.game.asteroids)
         self.collide(self.game.ships)
         self.collide(self.game.ship_sp_bullets)
+
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
         self.decelerate()  # Apply deceleration to slow down the player over time
         self.wrap_around_screen()
+
         #update player rect position based on return value of movement()
         self.rect.x += self.x_change
         self.rect.y += self.y_change
+
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
@@ -158,12 +157,12 @@ class Player(pygame.sprite.Sprite):
             self.turnRight()
         if keys[pygame.K_UP]:
             self.moveForward()
-
-    def collide_asteroid(self):
+  
+    def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
-        for enemy in self.game.enemies:
-            distance = math.sqrt((self.rect.centerx - enemy.rect.centerx) ** 2 + (self.rect.centery - enemy.rect.centery) ** 2)
-            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(enemy.rect.width, enemy.rect.height) / 2 - 2 * TILESIZE
+        for sprite in spriteGroup:
+            distance = math.sqrt((self.rect.centerx - sprite.rect.centerx) ** 2 + (self.rect.centery - sprite.rect.centery) ** 2)
+            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(sprite.rect.width, sprite.rect.height) / 2 - 2 * TILESIZE
             
             # Check if within collision threshold and not currently invulnerable
             if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
@@ -174,16 +173,6 @@ class Player(pygame.sprite.Sprite):
                     self.kill()
                     self.game.playing = False
                     break
-            
-    def collide(self, spriteGroup):
-        current_time = pygame.time.get_ticks()
-        if (pygame.sprite.spritecollide(self, spriteGroup,False) and current_time > self.damage_loop + 3000):
-            self.lives -= 1
-            self.damage_loop = current_time  # Reset invulnerability timer
-            
-            if self.lives <= 0:
-                self.kill()
-                self.game.playing = False
             
 
 class RegularBullet(pygame.sprite.Sprite):
