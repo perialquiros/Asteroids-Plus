@@ -33,6 +33,8 @@ class Game:
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
 
+        self.player_bullets = pygame.sprite.Group()
+
     def new(self):
         
         #new game
@@ -61,6 +63,8 @@ class Game:
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
+        
+        
 
         self.asteroid_alg()
 
