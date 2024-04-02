@@ -45,6 +45,10 @@ class Player(pygame.sprite.Sprite):
         self.y_change = 0
         self.angle = 0
 
+        
+        self.lives = 3
+        
+        
      #update player sprite
     def update(self):
         current_time = pygame.time.get_ticks()           
@@ -52,7 +56,13 @@ class Player(pygame.sprite.Sprite):
         self.rotate()
         self.movement()
         #update collision check
-        self.collide_asteroid()
+        #self.collide_asteroid()
+        
+        #check collisions
+        self.collide(self.game.ship_reg_bullets)
+        self.collide(self.game.asteroids)
+        self.collide(self.game.ships)
+        self.collide(self.game.ship_sp_bullets)
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
         self.decelerate()  # Apply deceleration to slow down the player over time
@@ -63,6 +73,7 @@ class Player(pygame.sprite.Sprite):
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
+        
 
         # Flickering logic: Change image back and forth if within invulnerability period
         if current_time <= self.damage_loop + 3000:  # 3000 ms invulnerability
@@ -135,3 +146,17 @@ class Player(pygame.sprite.Sprite):
                     self.kill()
                     self.game.playing = False
                     break
+            
+    def collide(self, spriteGroup):
+        current_time = pygame.time.get_ticks()
+        if (pygame.sprite.spritecollide(self, spriteGroup,False) and current_time > self.damage_loop + 3000):
+            self.lives -= 1
+            self.damage_loop = current_time  # Reset invulnerability timer
+            
+            if self.lives <= 0:
+                self.kill()
+                self.game.playing = False
+            
+            
+        
+        

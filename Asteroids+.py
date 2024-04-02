@@ -18,6 +18,7 @@ class Game:
 
     asteroid_timer = 0
     asteroid_spawn_delay = 5
+    lives = 3
 
     def __init__(self):
         pygame.init()
@@ -98,7 +99,7 @@ class Game:
                 self.spawn_delay_reg_bullet -= 5
             self.spawn_delay_sp_bullet -= 5
             self.game_timer = 0
-
+        
     #create background screen for game
     def draw(self):
         self.screen.fill(WHITE)
@@ -121,6 +122,16 @@ class Game:
         asteroid = Asteroid( self, 0, 0, size)
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
+        
+
+    def gameOverScreen(self):
+        pygame.font.init() 
+        my_font = pygame.font.SysFont('Comic Sans MS', 30)
+        text_surface = my_font.render('3 collisions', False, (0, 0, 0))
+        self.screen.blit(text_surface, (0,0))
+        
+    def gameOver(self):
+        return self.lives == 0
 
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
@@ -140,6 +151,8 @@ class Game:
             self.events()
             self.update()
             self.draw()
+            if(self.gameOver()):
+                break
 
         self.running = False
 
@@ -148,5 +161,6 @@ g.new() #create a new game everytime we run
 while g.running:
     g.main()
 
+g.gameOverScreen()
 pygame.quit()
 sys.exit()
