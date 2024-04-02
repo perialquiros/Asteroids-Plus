@@ -47,6 +47,9 @@ class Player(pygame.sprite.Sprite):
 
         
         self.lives = 3
+
+        self.game = game
+        self.player_bullets = self.game.player_bullets
         
         
      #update player sprite
@@ -85,6 +88,31 @@ class Player(pygame.sprite.Sprite):
             self.image = self.og_image  # Outside invulnerability period, use original image
 
         self.rotate()
+
+        self.handle_input()
+
+    def shoot_regular_bullet(self):
+        bullet = RegularBullet(self.rect.centerx, self.rect.centery)
+        # Set velocity based on player's direction
+        bullet.vel_x = math.cos(math.radians(self.angle)) * bullet.speed
+        bullet.vel_y = -math.sin(math.radians(self.angle)) * bullet.speed
+        self.game.all_sprites.add(bullet)
+        self.player_bullets.add(bullet)
+
+    def shoot_special_bullet(self):
+        bullet = SpecialBullet(self.rect.centerx, self.rect.centery)
+        # Set velocity based on player's direction
+        bullet.vel_x = math.cos(math.radians(self.angle)) * bullet.speed
+        bullet.vel_y = -math.sin(math.radians(self.angle)) * bullet.speed
+        self.game.all_sprites.add(bullet)
+        self.player_bullets.add(bullet)
+
+    def handle_input(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
+        elif keys[pygame.K_LSHIFT]:
+            self.shoot_special_bullet()
 
     def wrap_around_screen(self):
         if self.rect.right < 0:
@@ -157,6 +185,43 @@ class Player(pygame.sprite.Sprite):
                 self.kill()
                 self.game.playing = False
             
-            
+
+class RegularBullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
+        self.image.fill(BULLET_COLOR)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.speed = BULLET_SPEED
+        self.vel_x = 0  # Velocity in the x direction
+        self.vel_y = -self.speed  # Velocity in the y direction (initially upwards)
+
+    def update(self):
+        # Update bullet position based on velocity
+        self.rect.x += self.vel_x
+        self.rect.y += self.vel_y
+
+        # Remove bullet if it goes off-screen
+        if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
+            self.kill()
+
+class SpecialBullet(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
+        self.image.fill(SPECIAL_BULLET_COLOR)
+        self.rect = self.image.get_rect(center=(x, y))
+        self.speed = SPECIAL_BULLET_SPEED
+        self.vel_x = 0  # Velocity in the x direction
+        self.vel_y = -self.speed  # Velocity in the y direction (initially upwards)
+
+    def update(self):
+        # Update bullet position based on velocity
+        self.rect.x += self.vel_x
+        self.rect.y += self.vel_y
+
+        # Remove bullet if it goes off-screen
+        if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
+            self.kill()
         
         
