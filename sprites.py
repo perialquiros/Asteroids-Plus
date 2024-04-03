@@ -177,6 +177,7 @@ class Player(pygame.sprite.Sprite):
             # Check if within collision threshold and not currently invulnerable
             if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
                 self.lives -= 1
+                ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
                 self.damage_loop = current_time  # Reset invulnerability timer
                 
                 if self.lives <= 0:
@@ -186,19 +187,6 @@ class Player(pygame.sprite.Sprite):
             
     def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
-        if (pygame.sprite.spritecollide(self, spriteGroup,False) and current_time > self.damage_loop + 3000):
-            self.lives -= 1
-            self.damage_loop = current_time  # Reset invulnerability timer
-            
-            if self.lives <= 0:
-                self.kill()
-                self.game.playing = False
-            
-            
-
-  
-    def collide(self, spriteGroup):
-        current_time = pygame.time.get_ticks()
         for sprite in spriteGroup:
             distance = math.sqrt((self.rect.centerx - sprite.rect.centerx) ** 2 + (self.rect.centery - sprite.rect.centery) ** 2)
             collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(sprite.rect.width, sprite.rect.height) / 2 - 2 * TILESIZE
@@ -206,6 +194,7 @@ class Player(pygame.sprite.Sprite):
             # Check if within collision threshold and not currently invulnerable
             if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
                 self.lives -= 1
+                PLAYER_DESTROYED_CHANNEL.play(PLAYER_DESTROYED_MUSIC)
                 self.damage_loop = current_time  # Reset invulnerability timer
                 
                 if self.lives <= 0:
