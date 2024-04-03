@@ -1,9 +1,10 @@
 import pygame
 from sprites import *
-from config import *
+import config
 from ship import *
 from asteroid import *
 import sys
+from powerups import *
 
 class Game:
     # set the timer for ship spawn
@@ -31,6 +32,7 @@ class Game:
         self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
 
         self.player_bullets = pygame.sprite.Group()
 
@@ -62,6 +64,7 @@ class Game:
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
+        config.SPAWN_TIMER_POWERUP += 1
         
         self.asteroid_alg()
 
@@ -73,6 +76,10 @@ class Game:
         # move the ship
         for ship in self.ships:
             ship.move()
+
+        # check if player obtained the powerup
+        for powerup in self.powerups:
+            powerup.update()
 
         # create the ship based on time interval
         if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
@@ -86,7 +93,7 @@ class Game:
                 ship.shoot_sp_bullet()
             self.spawn_timer_sp_bullet = 0
         
-        # Start shooting for regular bullet
+        # start shooting for regular bullet
         if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
             for ship in self.ships:
                 ship.shoot_reg_bullet()
@@ -100,6 +107,13 @@ class Game:
                 self.spawn_delay_reg_bullet -= 5
             self.spawn_delay_sp_bullet -= 5
             self.game_timer = 0
+        
+        # spawn powerups based off the game time
+        if config.SPAWN_TIMER_POWERUP >= config.SPAWN_DELAY_POWERUP * FPS:
+            powerup = Powerups(self, self.player, self.screen)
+            self.all_sprites.add(powerup)
+            self.powerups.add(powerup)
+            config.SPAWN_TIMER_POWERUP = 0
         
     #create background screen for game
     def draw(self):

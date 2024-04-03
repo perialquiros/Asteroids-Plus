@@ -30,9 +30,14 @@ BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
-
+# player bullet variables
 BULLET_SPEED = 8
 BULLET_COLOR = BLACK 
 BULLET_SIZE = 5
 SPECIAL_BULLET_COLOR = RED
 SPECIAL_BULLET_SPEED = 8
+
+# set powerup image final choice
+SPAWN_TIMER_POWERUP = 0
+SPAWN_DELAY_POWERUP = 10
+

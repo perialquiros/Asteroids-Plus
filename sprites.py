@@ -46,9 +46,6 @@ class Player(pygame.sprite.Sprite):
         self.y_change = 0
         self.angle = 0
 
-
- 
-
         self.player_bullets = self.game.player_bullets
 
         
@@ -119,7 +116,6 @@ class Player(pygame.sprite.Sprite):
             self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
         elif keys[pygame.K_LSHIFT]:
             self.shoot_special_bullet()
-
 
     def wrap_around_screen(self):
         if self.rect.right < 0:
