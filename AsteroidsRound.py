@@ -4,7 +4,6 @@ from config import *
 import sys
 from ship import *
 from asteroid import *
-from button import *
 
 class Game:
     # set the timer for ship spawn
@@ -19,9 +18,9 @@ class Game:
 
     asteroid_timer = 0
     asteroid_spawn_delay = 5
+    lives = 3
 
     def __init__(self):
-        #pygame.init()
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
@@ -32,6 +31,8 @@ class Game:
         self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+
+        self.player_bullets = pygame.sprite.Group()
 
     def new(self):
         
@@ -61,7 +62,7 @@ class Game:
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
-
+        
         self.asteroid_alg()
 
         #update direction for special bullet
@@ -122,6 +123,7 @@ class Game:
         asteroid = Asteroid( self, 0, 0, size)
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
+        
 
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
@@ -143,11 +145,4 @@ class Game:
             self.draw()
 
         self.running = False
-    
 
-#menu()
-#g = Game() #init Game class
-#g.new() #create a new game everytime we run
-#while g.running:
-#    g.main()
-    
