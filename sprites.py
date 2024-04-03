@@ -116,11 +116,12 @@ class Player(pygame.sprite.Sprite):
     def handle_input(self):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
+            PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
         elif keys[pygame.K_LSHIFT]:
+            PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.shoot_special_bullet()
-
-
+            
     def wrap_around_screen(self):
         if self.rect.right < 0:
             self.rect.left = WIN_WIDTH

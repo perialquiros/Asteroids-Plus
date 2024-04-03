@@ -1,3 +1,5 @@
+import pygame
+
 WIN_WIDTH = 896
 WIN_HEIGHT = 896
 TILESIZE = 16
@@ -36,3 +38,18 @@ BULLET_COLOR = BLACK
 BULLET_SIZE = 5
 SPECIAL_BULLET_COLOR = RED
 SPECIAL_BULLET_SPEED = 8
+
+# initialize Pygame mixer
+pygame.mixer.init()
+
+# imports all the music and sound effects
+BACKGROUND_MUSIC = pygame.mixer.Sound('Sounds/Background Music.mp3')
+ASTEROID_MUSIC = pygame.mixer.Sound('Sounds/Asteroid Destroyed.mp3')
+PLAYER_BULLET_MUSIC = pygame.mixer.Sound('Sounds/Player Bullet.mp3')
+SHIP_MUSIC = pygame.mixer.Sound('Sounds/Ship Sounds.mp3')
+        
+# play music on separate channels
+MUSIC_CHANNEL = pygame.mixer.Channel(0)
+ASTEROID_CHANNEL = pygame.mixer.Channel(1)
+PLAYER_CHANNEL = pygame.mixer.Channel(2)
+SHIP_CHANNEL = pygame.mixer.Channel(3)

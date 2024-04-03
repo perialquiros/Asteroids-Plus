@@ -4,6 +4,8 @@ from config import *
 import sys
 from ship import *
 from asteroid import *
+import time
+import threading
 
 class Game:
     # set the timer for ship spawn
@@ -31,8 +33,11 @@ class Game:
         self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-
         self.player_bullets = pygame.sprite.Group()
+
+        # create threads for independent music playing
+        self.background_thread = threading.Thread(target=self.play_background_music)
+        self.ship_thread = threading.Thread(target=self.play_ship_music, daemon=True)
 
     def new(self):
         
@@ -50,6 +55,7 @@ class Game:
         for event in pygame.event.get():
             #when you x-out of window, game quits
             if event.type == pygame.QUIT:
+                self.stop_threads()
                 self.playing = False
                 self.running = False
 
@@ -79,14 +85,14 @@ class Game:
             self.spawn_timer_ship = 0
             self.spawn_ship()
             self.ship_exist = True #if destroyed, changes to false
-        
-        # start shooting for special bullet
+
+        # ship start shooting for special bullet
         if self.ship_exist and self.spawn_timer_sp_bullet >= self.spawn_delay_sp_bullet * FPS:
             for ship in self.ships:
                 ship.shoot_sp_bullet()
             self.spawn_timer_sp_bullet = 0
         
-        # Start shooting for regular bullet
+        # ship start shooting for regular bullet
         if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
             for ship in self.ships:
                 ship.shoot_reg_bullet()
@@ -124,7 +130,6 @@ class Game:
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
         
-
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
 
@@ -137,7 +142,33 @@ class Game:
             self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
+    def play_background_music(self):
+        while self.playing:
+            MUSIC_CHANNEL.play(BACKGROUND_MUSIC)
+            time.sleep(BACKGROUND_MUSIC.get_length())
+
+    def play_ship_music(self):
+        while self.playing:
+            if self.ship_exist:
+                if not SHIP_CHANNEL.get_busy():
+                    SHIP_CHANNEL.play(SHIP_MUSIC)
+            else:
+                SHIP_CHANNEL.stop()
+            time.sleep(0.1)  # Adjust this sleep time as needed
+
+    def stop_threads(self):
+        # Stop music and join threads before quitting
+        #self.background_thread.join()
+        #self.ship_thread.join()
+        MUSIC_CHANNEL.stop()
+        SHIP_CHANNEL.stop()
+        pass
+
     def main(self):
+        # Start the background and ship music thread
+        self.background_thread.start()
+        self.ship_thread.start()
+
         #game loop
         while self.playing:
             self.events()
@@ -145,4 +176,3 @@ class Game:
             self.draw()
 
         self.running = False
-
