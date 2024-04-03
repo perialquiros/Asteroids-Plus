@@ -1,9 +1,9 @@
 import pygame
 from sprites import *
 from config import *
-import sys
 from ship import *
 from asteroid import *
+import sys
 
 class Game:
     # set the timer for ship spawn
@@ -11,7 +11,7 @@ class Game:
     spawn_timer_ship = 0
     spawn_timer_reg_bullet = 0
     spawn_timer_sp_bullet = 0
-    spawn_delay_ship = 30
+    spawn_delay_ship = 1
     spawn_delay_reg_bullet = 20
     spawn_delay_sp_bullet = 60
     ship_exist = False
