@@ -20,6 +20,7 @@ Provide here instructions on how to use your application.
 - In your files, find the Asteriods+ Folder
 - There you will find *Menu.exe*
 - Run the executable file by right click instead of double click the file and choose open
+- When encountering the message, macOS cannot verify the developer of “Menu”. Are you sure you want to open it? Click yes
 - Enjoy playing!
 
 ## How to contribute
