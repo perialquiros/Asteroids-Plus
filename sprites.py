@@ -12,7 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
-        #Player Lives
+
         self.lives = PLAYER_LIVES
 
         # player position based on tile
@@ -46,16 +46,23 @@ class Player(pygame.sprite.Sprite):
         self.y_change = 0
         self.angle = 0
 
+
+ 
+
         self.player_bullets = self.game.player_bullets
+
         
         
     #update player sprite
     def update(self):
-        current_time = pygame.time.get_ticks()   
 
+        current_time = pygame.time.get_ticks()           
         #update movement
         self.rotate()
         self.movement()
+        #update collision check
+        #self.collide_asteroid()
+
         
         #check collisions
         self.collide(self.game.ship_reg_bullets)
@@ -113,6 +120,7 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_LSHIFT]:
             self.shoot_special_bullet()
 
+
     def wrap_around_screen(self):
         if self.rect.right < 0:
             self.rect.left = WIN_WIDTH
@@ -157,6 +165,36 @@ class Player(pygame.sprite.Sprite):
             self.turnRight()
         if keys[pygame.K_UP]:
             self.moveForward()
+
+
+    def collide_asteroid(self):
+        current_time = pygame.time.get_ticks()
+        for enemy in self.game.enemies:
+            distance = math.sqrt((self.rect.centerx - enemy.rect.centerx) ** 2 + (self.rect.centery - enemy.rect.centery) ** 2)
+            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(enemy.rect.width, enemy.rect.height) / 2 - 2 * TILESIZE
+            
+            # Check if within collision threshold and not currently invulnerable
+            if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
+                self.lives -= 1
+                self.damage_loop = current_time  # Reset invulnerability timer
+                
+                if self.lives <= 0:
+                    self.kill()
+                    self.game.playing = False
+                    break
+            
+    def collide(self, spriteGroup):
+        current_time = pygame.time.get_ticks()
+        if (pygame.sprite.spritecollide(self, spriteGroup,False) and current_time > self.damage_loop + 3000):
+            self.lives -= 1
+            self.damage_loop = current_time  # Reset invulnerability timer
+            
+            if self.lives <= 0:
+                self.kill()
+                self.game.playing = False
+            
+            
+
   
     def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
@@ -212,5 +250,6 @@ class SpecialBullet(pygame.sprite.Sprite):
         # Remove bullet if it goes off-screen
         if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
             self.kill()
+
         
         

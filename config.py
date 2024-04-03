@@ -16,7 +16,9 @@ PLAYER_LAYER = 4
 ASTEROID_LAYER = 3
 
 #Lives
+
 PLAYER_LIVES = 3
+
 
 # speeds (temporary)
 PLAYER_SPEED = 3
