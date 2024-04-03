@@ -166,35 +166,6 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_UP]:
             self.moveForward()
 
-
-    def collide_asteroid(self):
-        current_time = pygame.time.get_ticks()
-        for enemy in self.game.enemies:
-            distance = math.sqrt((self.rect.centerx - enemy.rect.centerx) ** 2 + (self.rect.centery - enemy.rect.centery) ** 2)
-            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(enemy.rect.width, enemy.rect.height) / 2 - 2 * TILESIZE
-            
-            # Check if within collision threshold and not currently invulnerable
-            if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
-                self.lives -= 1
-                self.damage_loop = current_time  # Reset invulnerability timer
-                
-                if self.lives <= 0:
-                    self.kill()
-                    self.game.playing = False
-                    break
-            
-    def collide(self, spriteGroup):
-        current_time = pygame.time.get_ticks()
-        if (pygame.sprite.spritecollide(self, spriteGroup,False) and current_time > self.damage_loop + 3000):
-            self.lives -= 1
-            self.damage_loop = current_time  # Reset invulnerability timer
-            
-            if self.lives <= 0:
-                self.kill()
-                self.game.playing = False
-            
-            
-
   
     def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
