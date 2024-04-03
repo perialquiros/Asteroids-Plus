@@ -1,21 +1,11 @@
 import pygame
 from sprites import *
-from config import *
 from ship import *
 from asteroid import *
 import sys
+import config
 
 class Game:
-    # set the timer for ship spawn
-    game_timer = 0
-    spawn_timer_ship = 0
-    spawn_timer_reg_bullet = 0
-    spawn_timer_sp_bullet = 0
-    spawn_delay_ship = 20
-    spawn_delay_reg_bullet = 20
-    spawn_delay_sp_bullet = 60
-    ship_exist = False
-
     asteroid_timer = 0
     asteroid_spawn_delay = 5
     lives = 3
@@ -31,7 +21,6 @@ class Game:
         self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
-
         self.player_bullets = pygame.sprite.Group()
 
     def new(self):
@@ -57,10 +46,10 @@ class Game:
         #game loop updates
         self.all_sprites.update()
 
-        self.spawn_timer_ship += 1
-        self.spawn_timer_sp_bullet += 1
-        self.spawn_timer_reg_bullet += 1
-        self.game_timer += 1
+        config.SPAWN_TIMER_SHIP += 1
+        config.SPAWN_TIMER_SP_BULLET += 1
+        config.SPAWN_TIMER_REG_BULLET += 1
+        config.GAME_TIMER += 1
         self.asteroid_timer += 1
         
         self.asteroid_alg()
@@ -68,38 +57,37 @@ class Game:
         #update direction for special bullet
         for bullet in self.ship_sp_bullets:
             bullet.update_dir(self.player)
-            self.spawn_sp_bullet = 0
 
         # move the ship
         for ship in self.ships:
             ship.move()
 
         # create the ship based on time interval
-        if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
-            self.spawn_timer_ship = 0
+        if config.SPAWN_TIMER_SHIP >= config.SPAWN_DELAY_SHIP * FPS:
+            config.SPAWN_TIMER_SHIP = 0
             self.spawn_ship()
-            self.ship_exist = True #if destroyed, changes to false
+            config.SHIP_EXIST = True #if destroyed, changes to false
         
         # start shooting for special bullet
-        if self.ship_exist and self.spawn_timer_sp_bullet >= self.spawn_delay_sp_bullet * FPS:
+        if config.SHIP_EXIST and config.SPAWN_TIMER_SP_BULLET >= config.SPAWN_DELAY_SP_BULLET * FPS:
             for ship in self.ships:
                 ship.shoot_sp_bullet()
-            self.spawn_timer_sp_bullet = 0
+            config.SPAWN_TIMER_SP_BULLET = 0
         
         # Start shooting for regular bullet
-        if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
+        if config.SHIP_EXIST and config.SPAWN_TIMER_REG_BULLET >= config.SPAWN_DELAY_REG_BULLET * FPS:
             for ship in self.ships:
                 ship.shoot_reg_bullet()
-            self.spawn_timer_reg_bullet = 0
+            config.SPAWN_TIMER_REG_BULLET = 0
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
-        if self.game_timer >= 60 and self.spawn_delay_sp_bullet > 30:
+        if config.GAME_TIMER >= 60 and config.SPAWN_DELAY_SP_BULLET > 30:
             #add a screen display of difficult level currently - to do
-            if self.spawn_delay_ship > 25:
-                self.spawn_delay_ship -= 5
-                self.spawn_delay_reg_bullet -= 5
-            self.spawn_delay_sp_bullet -= 5
-            self.game_timer = 0
+            if config.SPAWN_DELAY_SHIP > 25:
+                config.SPAWN_DELAY_SHIP -= 5
+                config.SPAWN_DELAY_REG_BULLET -= 5
+            config.SPAWN_DELAY_SP_BULLET -= 5
+            config.GAME_TIMER = 0
         
     #create background screen for game
     def draw(self):
@@ -124,13 +112,12 @@ class Game:
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
         
-
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
 
-        if self.game_timer >= 30:
+        if config.GAME_TIMER >= 30:
             self.asteroid_spawn_delay = 4
-        if self.game_timer >= 60:
+        if config.GAME_TIMER >= 60:
             self.asteroid_spawn_delay = 3
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:

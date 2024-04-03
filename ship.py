@@ -160,10 +160,13 @@ class ship_reg_bullet(pygame.sprite.Sprite):
         # Load bullet image and scale it
         bullet_image = pygame.image.load('Images/bullet.png')
         self.image = pygame.transform.scale(bullet_image, (60, 45))
-        self.rect = self.image.get_rect(center=(x, y))
+        self.rect = self.image.get_rect(center=(x, y)) #spawns bullet at the location of the ship
         self.speed = PLAYER_SPEED / 2
-        self.x_change = random.randint(-1, 1)
-        self.y_change = random.randint(-1, 1)
+        self.x_change = random.uniform(-1, 1)
+        self.y_change = random.uniform(-1, 1)
+        while self.x_change == 0 or self.y_change == 0:
+            self.x_change = random.uniform(-1, 1)
+            self.y_change = random.uniform(-1, 1)
 
     def update(self):
         # update bullet position based on direction and speed
