@@ -1,5 +1,5 @@
 import pygame
-from config import *
+import config
 import math
 import random
 
@@ -8,25 +8,23 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
 
         self.game = game
-        self._layer = PLAYER_LAYER
+        self._layer = config.PLAYER_LAYER
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
-
-        self.lives = PLAYER_LIVES
+        self.lives = config.PLAYER_LIVES
 
         # player position based on tile
-        self.x = x * TILESIZE
-        self.y = y * TILESIZE
+        self.x = x * config.TILESIZE
+        self.y = y * config.TILESIZE
         # player size - one tile
-        self.width = TILESIZE
-        self.height = TILESIZE
+        self.width = config.TILESIZE
+        self.height = config.TILESIZE
 
         # create player (TEMPORARY look)
         self.og_image = pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha()
         self.image = self.og_image
         self.damaged_image = pygame.image.load('Images/ships/ship-a/ship-a-damaged.png').convert_alpha()
-        self.damage_loop = 0
 
         # self.image.get_rect() returns a new rectangle covering the entire surface of `self.image`. This rectangle (rect) is used to position the sprite on the screen.
         # it's important for collision detection and rendering the sprite at its current position.
@@ -60,7 +58,6 @@ class Player(pygame.sprite.Sprite):
         #update collision check
         #self.collide_asteroid()
 
-        
         #check collisions
         self.collide(self.game.ship_reg_bullets)
         self.collide(self.game.asteroids)
@@ -79,10 +76,9 @@ class Player(pygame.sprite.Sprite):
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
-        
 
         # Flickering logic: Change image back and forth if within invulnerability period
-        if current_time <= self.damage_loop + 3000:  # 3000 ms invulnerability
+        if current_time <= config.DAMAGE_LOOP + 3000:  # 3000 ms invulnerability
             if current_time // 250 % 2 == 0:  # Change image every 250 ms
                 self.image = self.damaged_image
             else:
@@ -119,12 +115,12 @@ class Player(pygame.sprite.Sprite):
 
     def wrap_around_screen(self):
         if self.rect.right < 0:
-            self.rect.left = WIN_WIDTH
-        if self.rect.left > WIN_WIDTH:
+            self.rect.left = config.WIN_WIDTH
+        if self.rect.left > config.WIN_WIDTH:
             self.rect.right = 0
         if self.rect.bottom < 0:
-            self.rect.top = WIN_HEIGHT
-        if self.rect.top > WIN_HEIGHT:
+            self.rect.top = config.WIN_HEIGHT
+        if self.rect.top > config.WIN_HEIGHT:
             self.rect.bottom = 0
 
     def decelerate(self):
@@ -167,12 +163,12 @@ class Player(pygame.sprite.Sprite):
         current_time = pygame.time.get_ticks()
         for sprite in spriteGroup:
             distance = math.sqrt((self.rect.centerx - sprite.rect.centerx) ** 2 + (self.rect.centery - sprite.rect.centery) ** 2)
-            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(sprite.rect.width, sprite.rect.height) / 2 - 2 * TILESIZE
+            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(sprite.rect.width, sprite.rect.height) / 2 - 2 * config.TILESIZE
             
             # Check if within collision threshold and not currently invulnerable
-            if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
+            if distance < collision_threshold and current_time > config.DAMAGE_LOOP + 3000:  # Assuming 3000 ms invulnerability
                 self.lives -= 1
-                self.damage_loop = current_time  # Reset invulnerability timer
+                config.DAMAGE_LOOP = current_time  # Reset invulnerability timer
                 
                 if self.lives <= 0:
                     self.kill()
@@ -183,10 +179,10 @@ class Player(pygame.sprite.Sprite):
 class RegularBullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
-        self.image.fill(BULLET_COLOR)
+        self.image = pygame.Surface((config.BULLET_SIZE, config.BULLET_SIZE))
+        self.image.fill(config.BULLET_COLOR)
         self.rect = self.image.get_rect(center=(x, y))
-        self.speed = BULLET_SPEED
+        self.speed = config.BULLET_SPEED
         self.vel_x = 0  # Velocity in the x direction
         self.vel_y = -self.speed  # Velocity in the y direction (initially upwards)
 
@@ -196,16 +192,16 @@ class RegularBullet(pygame.sprite.Sprite):
         self.rect.y += self.vel_y
 
         # Remove bullet if it goes off-screen
-        if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
+        if self.rect.bottom < 0 or self.rect.top > config.WIN_HEIGHT or self.rect.right < 0 or self.rect.left > config.WIN_WIDTH:
             self.kill()
 
 class SpecialBullet(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
-        self.image.fill(SPECIAL_BULLET_COLOR)
+        self.image = pygame.Surface((config.BULLET_SIZE, config.BULLET_SIZE))
+        self.image.fill(config.SPECIAL_BULLET_COLOR)
         self.rect = self.image.get_rect(center=(x, y))
-        self.speed = SPECIAL_BULLET_SPEED
+        self.speed = config.SPECIAL_BULLET_SPEED
         self.vel_x = 0  # Velocity in the x direction
         self.vel_y = -self.speed  # Velocity in the y direction (initially upwards)
 
@@ -215,7 +211,7 @@ class SpecialBullet(pygame.sprite.Sprite):
         self.rect.y += self.vel_y
 
         # Remove bullet if it goes off-screen
-        if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
+        if self.rect.bottom < 0 or self.rect.top > config.WIN_HEIGHT or self.rect.right < 0 or self.rect.left > config.WIN_WIDTH:
             self.kill()
 
         

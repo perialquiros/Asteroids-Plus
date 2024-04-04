@@ -1,6 +1,7 @@
 import pygame
 from AsteroidsRound import *
 from button import *
+from config import *
 
 
 class Menu:
@@ -35,6 +36,7 @@ class Menu:
                 if self.playButton.is_clicked(event):
                         g = Game() #init Game class
                         g.new() #create a new game everytime we run
+                        config.PLAYER_LIVES = 3
                         while g.running:
                             g.main()
 

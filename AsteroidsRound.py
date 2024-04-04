@@ -110,7 +110,7 @@ class Game:
         
         # spawn powerups based off the game time
         if config.SPAWN_TIMER_POWERUP >= config.SPAWN_DELAY_POWERUP * FPS:
-            powerup = Powerups(self, self.player, self.screen)
+            powerup = Powerups(self.all_sprites, self.player)
             self.all_sprites.add(powerup)
             self.powerups.add(powerup)
             config.SPAWN_TIMER_POWERUP = 0
