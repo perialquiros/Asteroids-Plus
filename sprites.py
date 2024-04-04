@@ -45,10 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
         self.angle = 0
-
         self.player_bullets = self.game.player_bullets
-
-        
         
     #update player sprite
     def update(self):
@@ -89,7 +86,6 @@ class Player(pygame.sprite.Sprite):
             self.image = self.og_image  # Outside invulnerability period, use original image
 
         self.rotate()
-
         self.handle_input()
 
     def shoot_regular_bullet(self):
@@ -115,12 +111,12 @@ class Player(pygame.sprite.Sprite):
         # Calculate the time elapsed since the last shot
         time_since_last_shot = current_time - self.last_shot_time
 
-        if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
+        if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 500 milliseconds (0.5 second) have passed since the last shot
             self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
             PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.last_shot_time = current_time  # Update the last shot time
 
-        elif keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
+        elif keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:
             self.shoot_special_bullet()
             PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.last_shot_time = current_time  # Update the last shot time
@@ -197,11 +193,15 @@ class RegularBullet(pygame.sprite.Sprite):
         self.angle = angle  # Store the angle passed from the player
         self.vel_x = math.cos(math.radians(self.angle)) * self.speed  # Calculate x velocity based on angle
         self.vel_y = math.sin(math.radians(self.angle)) * self.speed  # Calculate y velocity based on angle
+        self.creation_time = pygame.time.get_ticks()
 
     def update(self):
-        # Update bullet position based on velocity
         self.rect.x += self.vel_x
         self.rect.y += self.vel_y
+        
+        # destroy bullet exists for more than 2 seconds
+        if pygame.time.get_ticks() - self.creation_time > 2000: 
+            self.kill()
 
         # leaves the screen = reenters from the opposite side
         if self.rect.bottom < 0: 
@@ -223,7 +223,6 @@ class RegularBullet(pygame.sprite.Sprite):
                 self.kill()
                 asteroid.take_damage()
 
-
 class SpecialBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, angle):
         super().__init__()
@@ -231,14 +230,18 @@ class SpecialBullet(pygame.sprite.Sprite):
         self.image.fill(SPECIAL_BULLET_COLOR)
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = SPECIAL_BULLET_SPEED
-        self.angle = angle  # Store the angle passed from the player
-        self.vel_x = math.cos(math.radians(self.angle)) * self.speed  # Calculate x velocity based on angle
-        self.vel_y = math.sin(math.radians(self.angle)) * self.speed  # Calculate y velocity based on angle
+        self.angle = angle  # store the angle passed from the player
+        self.vel_x = math.cos(math.radians(self.angle)) * self.speed  # calculate x velocity based on angle
+        self.vel_y = math.sin(math.radians(self.angle)) * self.speed  # calculate y velocity based on angle
+        self.creation_time = pygame.time.get_ticks()
 
     def update(self):
-        # Update bullet position based on velocity
         self.rect.x += self.vel_x
         self.rect.y += self.vel_y
+        
+        # destroy bullet exists for more than 2 seconds
+        if pygame.time.get_ticks() - self.creation_time > 2000: 
+            self.kill()
 
         # leaves the screen = reenters from the opposite side
         if self.rect.bottom < 0: 
