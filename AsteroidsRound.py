@@ -45,7 +45,7 @@ class Game:
         self.player_bullets = pygame.sprite.Group()
 
         # update all variables
-        self.spawn_timer_powerup = SPAWN_TIMER_POWERUP
+        self.spawn_timer_powerup = 0
 
     def new(self):
         
