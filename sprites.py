@@ -12,7 +12,9 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
+
         self.lives = PLAYER_LIVES
+        self.last_shot_time = 0  # Initialize the last shot time
 
         # player position based on tile
         self.x = x * TILESIZE
@@ -45,34 +47,39 @@ class Player(pygame.sprite.Sprite):
         self.y_change = 0
         self.angle = 0
 
-        
-        self.lives = 3
 
-        self.game = game
+ 
+
         self.player_bullets = self.game.player_bullets
+
         
         
-     #update player sprite
+    #update player sprite
     def update(self):
+
         current_time = pygame.time.get_ticks()           
         #update movement
         self.rotate()
         self.movement()
         #update collision check
         #self.collide_asteroid()
+
         
         #check collisions
         self.collide(self.game.ship_reg_bullets)
         self.collide(self.game.asteroids)
         self.collide(self.game.ships)
         self.collide(self.game.ship_sp_bullets)
+
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
         self.decelerate()  # Apply deceleration to slow down the player over time
         self.wrap_around_screen()
+
         #update player rect position based on return value of movement()
         self.rect.x += self.x_change
         self.rect.y += self.y_change
+
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
@@ -92,27 +99,35 @@ class Player(pygame.sprite.Sprite):
         self.handle_input()
 
     def shoot_regular_bullet(self):
-        bullet = RegularBullet(self.rect.centerx, self.rect.centery)
-        # Set velocity based on player's direction
-        bullet.vel_x = math.cos(math.radians(self.angle)) * bullet.speed
-        bullet.vel_y = -math.sin(math.radians(self.angle)) * bullet.speed
+        bullet = RegularBullet(self.rect.centerx, self.rect.centery, self.angle)
+        rad_angle = math.radians(self.angle)  # Convert angle to radians
+        bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
+        bullet.vel_y = math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
         self.game.all_sprites.add(bullet)
         self.player_bullets.add(bullet)
 
     def shoot_special_bullet(self):
-        bullet = SpecialBullet(self.rect.centerx, self.rect.centery)
-        # Set velocity based on player's direction
-        bullet.vel_x = math.cos(math.radians(self.angle)) * bullet.speed
-        bullet.vel_y = -math.sin(math.radians(self.angle)) * bullet.speed
+        bullet = SpecialBullet(self.rect.centerx, self.rect.centery, self.angle)
+        rad_angle = math.radians(self.angle)  # Convert angle to radians
+        bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
+        bullet.vel_y = -math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
         self.game.all_sprites.add(bullet)
         self.player_bullets.add(bullet)
 
     def handle_input(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
+        current_time = pygame.time.get_ticks()
+
+        # Calculate the time elapsed since the last shot
+        time_since_last_shot = current_time - self.last_shot_time
+
+        if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
-        elif keys[pygame.K_LSHIFT]:
+            self.last_shot_time = current_time  # Update the last shot time
+
+        elif keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_special_bullet()
+            self.last_shot_time = current_time  # Update the last shot time
 
     def wrap_around_screen(self):
         if self.rect.right < 0:
@@ -159,11 +174,12 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_UP]:
             self.moveForward()
 
-    def collide_asteroid(self):
+  
+    def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
-        for enemy in self.game.enemies:
-            distance = math.sqrt((self.rect.centerx - enemy.rect.centerx) ** 2 + (self.rect.centery - enemy.rect.centery) ** 2)
-            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(enemy.rect.width, enemy.rect.height) / 2 - 2 * TILESIZE
+        for sprite in spriteGroup:
+            distance = math.sqrt((self.rect.centerx - sprite.rect.centerx) ** 2 + (self.rect.centery - sprite.rect.centery) ** 2)
+            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(sprite.rect.width, sprite.rect.height) / 2 - 2 * TILESIZE
             
             # Check if within collision threshold and not currently invulnerable
             if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
@@ -175,53 +191,65 @@ class Player(pygame.sprite.Sprite):
                     self.game.playing = False
                     break
             
-    def collide(self, spriteGroup):
-        current_time = pygame.time.get_ticks()
-        if (pygame.sprite.spritecollide(self, spriteGroup,False) and current_time > self.damage_loop + 3000):
-            self.lives -= 1
-            self.damage_loop = current_time  # Reset invulnerability timer
-            
-            if self.lives <= 0:
-                self.kill()
-                self.game.playing = False
-            
-
 class RegularBullet(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, angle):
         super().__init__()
         self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
         self.image.fill(BULLET_COLOR)
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = BULLET_SPEED
-        self.vel_x = 0  # Velocity in the x direction
-        self.vel_y = -self.speed  # Velocity in the y direction (initially upwards)
+        self.angle = angle  # Store the angle passed from the player
+        self.vel_x = math.cos(math.radians(self.angle)) * self.speed  # Calculate x velocity based on angle
+        self.vel_y = math.sin(math.radians(self.angle)) * self.speed  # Calculate y velocity based on angle
 
     def update(self):
         # Update bullet position based on velocity
         self.rect.x += self.vel_x
         self.rect.y += self.vel_y
 
-        # Remove bullet if it goes off-screen
-        if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
-            self.kill()
+        # leaves the screen = reenters from the opposite side
+        if self.rect.bottom < 0: 
+            self.rect.y = WIN_HEIGHT
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.right < 0:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = WIN_WIDTH
+        if self.rect.top > WIN_HEIGHT:
+            self.rect.y = 0
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.left > WIN_WIDTH:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = 0
 
 class SpecialBullet(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, angle):
         super().__init__()
         self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
         self.image.fill(SPECIAL_BULLET_COLOR)
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = SPECIAL_BULLET_SPEED
-        self.vel_x = 0  # Velocity in the x direction
-        self.vel_y = -self.speed  # Velocity in the y direction (initially upwards)
+        self.angle = angle  # Store the angle passed from the player
+        self.vel_x = math.cos(math.radians(self.angle)) * self.speed  # Calculate x velocity based on angle
+        self.vel_y = -math.sin(math.radians(self.angle)) * self.speed  # Calculate y velocity based on angle
 
     def update(self):
         # Update bullet position based on velocity
         self.rect.x += self.vel_x
         self.rect.y += self.vel_y
 
-        # Remove bullet if it goes off-screen
-        if self.rect.bottom < 0 or self.rect.top > WIN_HEIGHT or self.rect.right < 0 or self.rect.left > WIN_WIDTH:
-            self.kill()
+        # leaves the screen = reenters from the opposite side
+        if self.rect.bottom < 0: 
+            self.rect.y = WIN_HEIGHT
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.right < 0:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = WIN_WIDTH
+        if self.rect.top > WIN_HEIGHT:
+            self.rect.y = 0
+            self.rect.x = WIN_WIDTH - self.rect.x
+        if self.rect.left > WIN_WIDTH:
+            self.rect.y = WIN_HEIGHT - self.rect.y
+            self.rect.x = 0
+
         
         
