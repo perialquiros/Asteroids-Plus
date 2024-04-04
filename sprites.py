@@ -117,10 +117,12 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
+            PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.last_shot_time = current_time  # Update the last shot time
 
         elif keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_special_bullet()
+            PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.last_shot_time = current_time  # Update the last shot time
 
     def wrap_around_screen(self):
@@ -177,6 +179,7 @@ class Player(pygame.sprite.Sprite):
             # Check if within collision threshold and not currently invulnerable
             if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
                 self.lives -= 1
+                PLAYER_DESTROYED_CHANNEL.play(PLAYER_DESTROYED_MUSIC)
                 self.damage_loop = current_time  # Reset invulnerability timer
                 
                 if self.lives <= 0:
@@ -220,6 +223,7 @@ class RegularBullet(pygame.sprite.Sprite):
                 self.kill()
                 asteroid.take_damage()
 
+
 class SpecialBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, angle):
         super().__init__()
@@ -255,5 +259,4 @@ class SpecialBullet(pygame.sprite.Sprite):
             if pygame.sprite.collide_circle(self, asteroid):
                 self.kill()
                 asteroid.take_damage()
-        
         

@@ -48,6 +48,9 @@ class Game:
         # update all variables
         self.spawn_timer_powerup = 0
 
+        # Start the ship music
+        self.ship_music_playing = False
+
     def new(self):
         
         #new game
@@ -182,11 +185,25 @@ class Game:
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
     def main(self):
+        # Start the background music
+        MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
+
         #game loop
         while self.playing:
             self.events()
             self.update()
             self.draw()
 
+            # Check if ship music needs to be played
+            if not self.ship_music_playing and self.ship_exist:
+                SHIP_CHANNEL.play(SHIP_MUSIC, loops=-1)
+                self.ship_music_playing = True
+            elif self.ship_music_playing and not self.ship_exist:
+                SHIP_CHANNEL.stop()
+                self.ship_music_playing = False
+                
+        # Stop music before quitting
+        MUSIC_CHANNEL.stop()
+        SHIP_CHANNEL.stop()
         self.running = False
 

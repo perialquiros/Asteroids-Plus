@@ -40,3 +40,30 @@ SPECIAL_BULLET_SPEED = 4
 
 SPAWN_DELAY_POWERUP = 60
 
+# initialize Pygame mixer
+import pygame
+pygame.mixer.init()
+
+# imports all the music and sound effects
+BACKGROUND_MUSIC = pygame.mixer.Sound('Sounds/Background Music.mp3')
+ASTEROID_MUSIC = pygame.mixer.Sound('Sounds/Asteroid Destroyed.mp3')
+PLAYER_BULLET_MUSIC = pygame.mixer.Sound('Sounds/Player Bullet.mp3')
+SHIP_MUSIC = pygame.mixer.Sound('Sounds/Ship Sounds.mp3')
+PLAYER_DESTROYED_MUSIC = pygame.mixer.Sound('Sounds/Player Destroyed.mp3')
+POWERUP_MUSIC = pygame.mixer.Sound('Sounds/Obtain Powerup.mp3')
+BOMB_MUSIC = pygame.mixer.Sound('Sounds/Explosion.mp3')
+        
+# play music on separate channels
+MUSIC_CHANNEL = pygame.mixer.Channel(0)
+ASTEROID_CHANNEL = pygame.mixer.Channel(1)
+PLAYER_CHANNEL = pygame.mixer.Channel(2)
+PLAYER_DESTROYED_CHANNEL = pygame.mixer.Channel(3)
+SHIP_CHANNEL = pygame.mixer.Channel(4)
+POWERUP_CHANNEL = pygame.mixer.Channel(5)
+
+# set volume, needs continuous testing
+pygame.mixer.Channel(0).set_volume(2)
+pygame.mixer.Channel(1).set_volume(10)
+pygame.mixer.Channel(2).set_volume(3)
+pygame.mixer.Channel(4).set_volume(0.5)
+pygame.mixer.Channel(3).set_volume(10)

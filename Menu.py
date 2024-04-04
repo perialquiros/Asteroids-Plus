@@ -1,7 +1,6 @@
 import pygame
 from AsteroidsRound import *
 from button import *
-from config import *
 
 
 class Menu:
