@@ -36,6 +36,9 @@ class Game:
 
         self.player_bullets = pygame.sprite.Group()
 
+        # update all variables
+        self.spawn_timer_powerup = SPAWN_TIMER_POWERUP
+
     def new(self):
         
         #new game
@@ -64,7 +67,7 @@ class Game:
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
-        config.SPAWN_TIMER_POWERUP += 1
+        self.spawn_timer_powerup += 1
         
         self.asteroid_alg()
 
@@ -109,11 +112,11 @@ class Game:
             self.game_timer = 0
         
         # spawn powerups based off the game time
-        if config.SPAWN_TIMER_POWERUP >= config.SPAWN_DELAY_POWERUP * FPS:
+        if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
             powerup = Powerups(self.all_sprites, self.player)
             self.all_sprites.add(powerup)
             self.powerups.add(powerup)
-            config.SPAWN_TIMER_POWERUP = 0
+            self.spawn_timer_powerup = 0
         
     #create background screen for game
     def draw(self):
