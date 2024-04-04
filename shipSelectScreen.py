@@ -1,33 +1,28 @@
 import pygame
-from sprites import *
 from config import *
-from ship import *
-from asteroid import *
 from button import *
-from AsteroidsRound import *
-from shipSelectScreen import *
 
-class Menu:
+class ShipSelection:
+
     def __init__(self):
         pygame.init()
-        # load screen and images for background
+
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+
         self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
         self.background = pygame.transform.scale(self.background, (WIN_WIDTH, WIN_HEIGHT))
         stars_image = pygame.image.load('Images/backgrounds/space-stars.png')
         self.bg_stars = pygame.transform.scale(stars_image, (WIN_WIDTH, WIN_HEIGHT))
-        # init vars for background movement
         self.bg_stars_x1 = 0
         self.bg_stars_x2 = WIN_WIDTH
-        # init clock for FPS
-        self.clock = pygame.time.Clock()
 
+        self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
         self.running = True
-        self.playButton = Button((WIN_WIDTH/2 - 50, WIN_HEIGHT/2 - 150), (100, 100), (0,255,0), "PLAY")
-        self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), (0, 255, 0), "CUSTOMIZE")
-        self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), (0,255,0), "EXIT")
-        
-        
+    
+    def new(self):
+        self.selecting = True
+
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
@@ -35,11 +30,7 @@ class Menu:
         
         self.clock.tick(FPS) #update the screen based on FPS
         pygame.mouse.set_visible(True)
-        
-        self.playButton.draw(self.screen)
-        self.shipSelect.draw(self.screen)
-        self.exitButton.draw(self.screen)
-    
+
         pygame.display.update()
 
     def update_background(self):
@@ -55,34 +46,14 @@ class Menu:
         if self.bg_stars_x2 + WIN_WIDTH < 0:
             self.bg_stars_x2 = WIN_WIDTH
 
-    def play(self):
-        while True:
-            m.draw()
-            m.update_background()
+    def main(self):
+        # loop screen
+        while self.running:
+            self.draw()
+            self.update_background()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    exit()
+                    self.running = False
                 elif event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pygame.quit()
-
-                if self.playButton.is_clicked(event):
-                        g = Game() #init Game class
-                        g.new() #create a new game everytime we run
-                        while g.running:
-                            g.main()
-                if self.shipSelect.is_clicked(event):
-                    select = ShipSelection()
-                    while select.running:
-                        select.main()
-
-                if self.exitButton.is_clicked(event):
-                    # exit
-                    pygame.quit()
-                    exit()
-        
-        
-m = Menu()
-while m.running:
-    m.play()
+                        self.running = False
