@@ -38,12 +38,12 @@ class Menu:
                         g.new() #create a new game everytime we run
                         while g.running:
                             g.main()
-                        break
 
                 if self.exitButton.is_clicked(event):
                     # exit
                     pygame.quit()
                     exit()
+        
         
 m = Menu()
 while m.running:

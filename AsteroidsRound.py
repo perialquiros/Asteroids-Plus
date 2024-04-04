@@ -42,6 +42,7 @@ class Game:
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
+
         self.player_bullets = pygame.sprite.Group()
 
         # update all variables
@@ -63,8 +64,8 @@ class Game:
         for event in pygame.event.get():
             #when you x-out of window, game quits
             if event.type == pygame.QUIT:
-                self.running = False
                 self.playing = False
+                self.running = False
 
     def update(self):
         #game loop updates
@@ -99,14 +100,14 @@ class Game:
             self.spawn_timer_ship = 0
             self.spawn_ship()
             self.ship_exist = True #if destroyed, changes to false
-
-        # ship start shooting for special bullet
+        
+        # start shooting for special bullet
         if self.ship_exist and self.spawn_timer_sp_bullet >= self.spawn_delay_sp_bullet * FPS:
             for ship in self.ships:
                 ship.shoot_sp_bullet()
             self.spawn_timer_sp_bullet = 0
         
-        # ship start shooting for regular bullet
+        # start shooting for regular bullet
         if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
             for ship in self.ships:
                 ship.shoot_reg_bullet()
@@ -167,6 +168,7 @@ class Game:
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
         
+
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
 
@@ -180,26 +182,11 @@ class Game:
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
     def main(self):
-        # Start the background music
-        MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
-
-        # Start the ship music
-        ship_music_playing = False
-
         #game loop
-        while self.running:
+        while self.playing:
             self.events()
-            if self.playing:
-                self.update()
-                self.draw()
-                # Check if ship music needs to be played
-                if not ship_music_playing and self.ship_exist:
-                    SHIP_CHANNEL.play(SHIP_MUSIC, loops=-1)
-                    ship_music_playing = True
-                elif ship_music_playing and not self.ship_exist:
-                    SHIP_CHANNEL.stop()
-                    ship_music_playing = False
+            self.update()
+            self.draw()
 
-        # Stop music before quitting
-        MUSIC_CHANNEL.stop()
-        SHIP_CHANNEL.stop()
+        self.running = False
+

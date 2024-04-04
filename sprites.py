@@ -117,14 +117,12 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
-            PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.last_shot_time = current_time  # Update the last shot time
 
         elif keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_special_bullet()
-            PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
             self.last_shot_time = current_time  # Update the last shot time
-            
+
     def wrap_around_screen(self):
         if self.rect.right < 0:
             self.rect.left = WIN_WIDTH
@@ -169,24 +167,7 @@ class Player(pygame.sprite.Sprite):
             self.turnRight()
         if keys[pygame.K_UP]:
             self.moveForward()
-
-    def collide_asteroid(self):
-        current_time = pygame.time.get_ticks()
-        for enemy in self.game.enemies:
-            distance = math.sqrt((self.rect.centerx - enemy.rect.centerx) ** 2 + (self.rect.centery - enemy.rect.centery) ** 2)
-            collision_threshold = max(self.rect.width, self.rect.height) / 2 + max(enemy.rect.width, enemy.rect.height) / 2 - 2 * TILESIZE
-            
-            # Check if within collision threshold and not currently invulnerable
-            if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
-                self.lives -= 1
-                ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
-                self.damage_loop = current_time  # Reset invulnerability timer
-                
-                if self.lives <= 0:
-                    self.kill()
-                    self.game.playing = False
-                    break
-
+  
     def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
         for sprite in spriteGroup:
@@ -196,7 +177,6 @@ class Player(pygame.sprite.Sprite):
             # Check if within collision threshold and not currently invulnerable
             if distance < collision_threshold and current_time > self.damage_loop + 3000:  # Assuming 3000 ms invulnerability
                 self.lives -= 1
-                PLAYER_DESTROYED_CHANNEL.play(PLAYER_DESTROYED_MUSIC)
                 self.damage_loop = current_time  # Reset invulnerability timer
                 
                 if self.lives <= 0:

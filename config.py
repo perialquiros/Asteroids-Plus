@@ -1,5 +1,3 @@
-import pygame
-
 WIN_WIDTH = 800
 WIN_HEIGHT = 800
 TILESIZE = 16
@@ -42,21 +40,3 @@ SPECIAL_BULLET_SPEED = 4
 
 SPAWN_DELAY_POWERUP = 60
 
-# initialize Pygame mixer
-pygame.mixer.init()
-
-# imports all the music and sound effects
-BACKGROUND_MUSIC = pygame.mixer.Sound('Sounds/Background Music.mp3')
-ASTEROID_MUSIC = pygame.mixer.Sound('Sounds/Asteroid Destroyed.mp3')
-PLAYER_BULLET_MUSIC = pygame.mixer.Sound('Sounds/Player Bullet.mp3')
-SHIP_MUSIC = pygame.mixer.Sound('Sounds/Ship Sounds.mp3')
-PLAYER_DESTROYED_MUSIC = pygame.mixer.Sound('Sounds/Player Destroyed.mp3')
-OBTAIN_POWERUP_MUSIC = pygame.mixer.Sound('Sounds/Obtain Powerup.mp3')
-        
-# play music on separate channels
-MUSIC_CHANNEL = pygame.mixer.Channel(0)
-ASTEROID_CHANNEL = pygame.mixer.Channel(1)
-PLAYER_CHANNEL = pygame.mixer.Channel(2)
-PLAYER_DESTROYED_CHANNEL = pygame.mixer.Channel(3)
-SHIP_CHANNEL = pygame.mixer.Channel(4)
-POWERUP_CHANNEL = pygame.mixer.Channel(5)
