@@ -62,6 +62,8 @@ class Game:
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
+
+        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
         
         self.asteroid_alg()
 
