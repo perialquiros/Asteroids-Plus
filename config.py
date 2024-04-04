@@ -16,9 +16,10 @@ PLAYER_LAYER = 4
 ASTEROID_LAYER = 3
 
 #Lives
-
 PLAYER_LIVES = 3
 
+# vulnerability time in ms
+DAMAGE_LOOP = 0
 
 # speeds (temporary)
 PLAYER_SPEED = 3
@@ -30,9 +31,14 @@ BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
-
+# player bullet variables
 BULLET_SPEED = 8
 BULLET_COLOR = BLACK 
 BULLET_SIZE = 5
 SPECIAL_BULLET_COLOR = RED
 SPECIAL_BULLET_SPEED = 8
+
+# set powerup image final choice
+SPAWN_TIMER_POWERUP = 0
+SPAWN_DELAY_POWERUP = 60
+

@@ -12,7 +12,6 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
-
         self.lives = PLAYER_LIVES
         self.last_shot_time = 0  # Initialize the last shot time
 
@@ -61,7 +60,6 @@ class Player(pygame.sprite.Sprite):
         #update collision check
         #self.collide_asteroid()
 
-        
         #check collisions
         self.collide(self.game.ship_reg_bullets)
         self.collide(self.game.asteroids)
@@ -80,7 +78,6 @@ class Player(pygame.sprite.Sprite):
         #reset _change vars
         self.x_change = 0
         self.y_change = 0
-        
 
         # Flickering logic: Change image back and forth if within invulnerability period
         if current_time <= self.damage_loop + 3000:  # 3000 ms invulnerability
@@ -125,7 +122,6 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:  # Shoot only if 1000 milliseconds (1 second) have passed since the last shot
             self.shoot_special_bullet()
             self.last_shot_time = current_time  # Update the last shot time
-
 
     def wrap_around_screen(self):
         if self.rect.right < 0:
