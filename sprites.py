@@ -12,6 +12,7 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
+
         self.lives = PLAYER_LIVES
         self.last_shot_time = 0  # Initialize the last shot time
 
@@ -125,6 +126,7 @@ class Player(pygame.sprite.Sprite):
             self.shoot_special_bullet()
             self.last_shot_time = current_time  # Update the last shot time
 
+
     def wrap_around_screen(self):
         if self.rect.right < 0:
             self.rect.left = WIN_WIDTH
@@ -169,7 +171,6 @@ class Player(pygame.sprite.Sprite):
             self.turnRight()
         if keys[pygame.K_UP]:
             self.moveForward()
-
   
     def collide(self, spriteGroup):
         current_time = pygame.time.get_ticks()
@@ -246,6 +247,5 @@ class SpecialBullet(pygame.sprite.Sprite):
         if self.rect.left > WIN_WIDTH:
             self.rect.y = WIN_HEIGHT - self.rect.y
             self.rect.x = 0
-
         
         

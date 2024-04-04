@@ -21,7 +21,6 @@ class Game:
     lives = 3
 
     def __init__(self):
-        pygame.init()
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
@@ -64,8 +63,6 @@ class Game:
         self.game_timer += 1
         self.asteroid_timer += 1
         
-        
-
         self.asteroid_alg()
 
         #update direction for special bullet
@@ -128,15 +125,6 @@ class Game:
         self.asteroids.add(asteroid)
         
 
-    def gameOverScreen(self):
-        pygame.font.init() 
-        my_font = pygame.font.SysFont('Comic Sans MS', 30)
-        text_surface = my_font.render('3 collisions', False, (0, 0, 0))
-        self.screen.blit(text_surface, (0,0))
-        
-    def gameOver(self):
-        return self.lives == 0
-
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
 
@@ -155,16 +143,6 @@ class Game:
             self.events()
             self.update()
             self.draw()
-            if(self.gameOver()):
-                break
 
         self.running = False
 
-g = Game() #init Game class
-g.new() #create a new game everytime we run
-while g.running:
-    g.main()
-
-g.gameOverScreen()
-pygame.quit()
-sys.exit()
