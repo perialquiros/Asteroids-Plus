@@ -1,6 +1,6 @@
 import pygame
 from sprites import *
-import config
+from config import *
 from ship import *
 from asteroid import *
 import sys
