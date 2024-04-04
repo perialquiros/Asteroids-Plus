@@ -22,6 +22,7 @@ class Game:
     asteroid_spawn_delay = 5
     lives = 3
 
+
     def __init__(self):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 
@@ -83,6 +84,8 @@ class Game:
         
         pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
         
+        pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
+
         self.asteroid_alg()
 
         #update direction for special bullet
@@ -193,6 +196,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
+            self.player_bullets.update()
 
             # Check if ship music needs to be played
             if not self.ship_music_playing and self.ship_exist:
