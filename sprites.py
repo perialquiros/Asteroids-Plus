@@ -12,7 +12,6 @@ class Player(pygame.sprite.Sprite):
         self.groups = self.game.all_sprites
         pygame.sprite.Sprite.__init__(self, self.groups) #add player to all sprites group
 
-
         self.lives = PLAYER_LIVES
         self.last_shot_time = 0  # Initialize the last shot time
 
@@ -46,9 +45,6 @@ class Player(pygame.sprite.Sprite):
         self.x_change = 0
         self.y_change = 0
         self.angle = 0
-
-
- 
 
         self.player_bullets = self.game.player_bullets
 
@@ -110,7 +106,7 @@ class Player(pygame.sprite.Sprite):
         bullet = SpecialBullet(self.rect.centerx, self.rect.centery, self.angle)
         rad_angle = math.radians(self.angle)  # Convert angle to radians
         bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
-        bullet.vel_y = -math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
+        bullet.vel_y = math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
         self.game.all_sprites.add(bullet)
         self.player_bullets.add(bullet)
 
@@ -230,7 +226,7 @@ class SpecialBullet(pygame.sprite.Sprite):
         self.speed = SPECIAL_BULLET_SPEED
         self.angle = angle  # Store the angle passed from the player
         self.vel_x = math.cos(math.radians(self.angle)) * self.speed  # Calculate x velocity based on angle
-        self.vel_y = -math.sin(math.radians(self.angle)) * self.speed  # Calculate y velocity based on angle
+        self.vel_y = math.sin(math.radians(self.angle)) * self.speed  # Calculate y velocity based on angle
 
     def update(self):
         # Update bullet position based on velocity
