@@ -218,6 +218,12 @@ class RegularBullet(pygame.sprite.Sprite):
             self.rect.y = WIN_HEIGHT - self.rect.y
             self.rect.x = 0
 
+    def collide(self, spriteGroup):
+        for asteroid in spriteGroup:
+            if pygame.sprite.collide_circle(self, asteroid):
+                self.kill()
+                asteroid.take_damage()
+
 class SpecialBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, angle):
         super().__init__()
@@ -247,5 +253,11 @@ class SpecialBullet(pygame.sprite.Sprite):
         if self.rect.left > WIN_WIDTH:
             self.rect.y = WIN_HEIGHT - self.rect.y
             self.rect.x = 0
+
+    def collide(self, spriteGroup):
+        for asteroid in spriteGroup:
+            if pygame.sprite.collide_circle(self, asteroid):
+                self.kill()
+                asteroid.take_damage()
         
         
