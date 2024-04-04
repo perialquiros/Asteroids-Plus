@@ -22,6 +22,14 @@ class Game:
 
     def __init__(self):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+
+        self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
+        self.background = pygame.transform.scale(self.background, (WIN_WIDTH, WIN_HEIGHT))
+        stars_image = pygame.image.load('Images/backgrounds/space-stars.png')
+        self.bg_stars = pygame.transform.scale(stars_image, (WIN_WIDTH, WIN_HEIGHT))
+        self.bg_stars_x1 = 0
+        self.bg_stars_x2 = WIN_WIDTH
+
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
         self.running = True
@@ -56,7 +64,7 @@ class Game:
     def update(self):
         #game loop updates
         self.all_sprites.update()
-
+        self.update_background()
         self.spawn_timer_ship += 1
         self.spawn_timer_sp_bullet += 1
         self.spawn_timer_reg_bullet += 1
@@ -103,15 +111,31 @@ class Game:
         
     #create background screen for game
     def draw(self):
-        self.screen.fill(WHITE)
-        self.all_sprites.draw(self.screen) #
+        self.screen.blit(self.background, (0,0))
+        self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
+        self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+        self.all_sprites.draw(self.screen) 
         self.clock.tick(FPS) #update the screen based on FPS
 
-        lives_text = self.font.render('Lives: ' + str(self.player.lives), False, BLACK)
+        lives_text = self.font.render('Lives: ' + str(self.player.lives), False, WHITE)
         
         # Draw the lives text
         self.screen.blit(lives_text, (10, 10))
         pygame.display.update()
+
+    def update_background(self):
+        # Move backgrounds to the left
+        self.bg_stars_x1 -= 1  # Adjust speed as necessary
+        self.bg_stars_x2 -= 1
+        
+        # If the first image is completely off-screen
+        if self.bg_stars_x1 + WIN_WIDTH < 0:
+            self.bg_stars_x1 = WIN_WIDTH
+            
+        # If the second image is completely off-screen
+        if self.bg_stars_x2 + WIN_WIDTH < 0:
+            self.bg_stars_x2 = WIN_WIDTH
+
 
     def spawn_ship(self):
         # Create a new ship and add it to the groups
