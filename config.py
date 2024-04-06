@@ -38,8 +38,7 @@ BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 
-
-# saycer bullets
+# saucer bullets
 BULLET_SPEED = 8
 BULLET_COLOR = BLACK 
 BULLET_SIZE = 5

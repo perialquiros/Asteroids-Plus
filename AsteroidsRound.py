@@ -1,20 +1,13 @@
 import pygame
 from sprites import *
-from config import *
 from ship import *
+from config import *
 from asteroid import *
 import sys
 from powerups import *
 import time
 
 class Game:
-    # set the timer for ship spawn
-    game_timer = 0
-    spawn_timer_ship = 0
-    spawn_delay_ship = 20
-    spawn_delay_reg_bullet = 10
-    spawn_delay_sp_bullet = 20
-
     asteroid_timer = 0
     asteroid_spawn_delay = 5
     lives = 3
@@ -38,6 +31,15 @@ class Game:
         #init sprite sheets
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.player_bullets = pygame.sprite.Group()
+
+        # all variables for the ship class
+        self.game_timer = 0
+        self.spawn_timer_ship = 0
+        self.spawn_delay_ship = 30
+        self.spawn_delay_reg_bullet = 10
+        self.spawn_delay_sp_bullet = 20
+
         self.powerups = pygame.sprite.Group()
         self.ship_bullets = pygame.sprite.Group()
 
@@ -45,9 +47,6 @@ class Game:
 
         # update all variables
         self.spawn_timer_powerup = 0
-
-        # Start the ship music
-        self.ship_music_playing = False
 
     def new(self):
         
@@ -89,7 +88,7 @@ class Game:
         
         #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
         self.asteroid_alg()
-
+        
         # move the ship
         for ship in self.ships:
             ship.spawn_timer_sp_bullet += 1
