@@ -59,10 +59,9 @@ class Player(pygame.sprite.Sprite):
         #self.collide_asteroid()
 
         #check collisions
-        self.collide(self.game.ship_reg_bullets)
+        self.collide(self.game.ship_bullets)
         self.collide(self.game.asteroids)
         self.collide(self.game.ships)
-        self.collide(self.game.ship_sp_bullets)
 
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position

@@ -11,12 +11,9 @@ class Game:
     # set the timer for ship spawn
     game_timer = 0
     spawn_timer_ship = 0
-    spawn_timer_reg_bullet = 0
-    spawn_timer_sp_bullet = 0
     spawn_delay_ship = 20
-    spawn_delay_reg_bullet = 20
-    spawn_delay_sp_bullet = 60
-    ship_exist = False
+    spawn_delay_reg_bullet = 10
+    spawn_delay_sp_bullet = 20
 
     asteroid_timer = 0
     asteroid_spawn_delay = 5
@@ -39,11 +36,10 @@ class Game:
         self.running = True
 
         #init sprite sheets
-        self.ship_sp_bullets = pygame.sprite.Group()
-        self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
+        self.ship_bullets = pygame.sprite.Group()
 
         self.player_bullets = pygame.sprite.Group()
 
@@ -85,26 +81,33 @@ class Game:
         self.all_sprites.update()
         self.update_background()
         self.spawn_timer_ship += 1
-        self.spawn_timer_sp_bullet += 1
-        self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
         
         pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
         
-        pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
-
+        #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
         self.asteroid_alg()
-
-        #update direction for special bullet
-        for bullet in self.ship_sp_bullets:
-            bullet.update_dir(self.player)
-            self.spawn_sp_bullet = 0
 
         # move the ship
         for ship in self.ships:
+            ship.spawn_timer_sp_bullet += 1
+            ship.spawn_timer_reg_bullet += 1
             ship.move()
+            for bullet in ship.ship_sp_bullets:
+                bullet.update_dir(self.player)
+            ship.check_collision(self.player_bullets)
+
+            # start shooting for regular bullet
+            print(ship.spawn_timer_reg_bullet, self.spawn_delay_reg_bullet * FPS)
+            if ship.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
+                ship.shoot_reg_bullet()
+                ship.spawn_timer_reg_bullet = 0
+            # start shooting for special bullet
+            if ship.spawn_timer_sp_bullet >= self.spawn_delay_sp_bullet * FPS:
+                ship.shoot_sp_bullet()
+                ship.spawn_timer_sp_bullet = 0
 
         # check if player obtained the powerup
         for powerup in self.powerups:
@@ -114,19 +117,7 @@ class Game:
         if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
             self.spawn_timer_ship = 0
             self.spawn_ship()
-            self.ship_exist = True #if destroyed, changes to false
-        
-        # start shooting for special bullet
-        if self.ship_exist and self.spawn_timer_sp_bullet >= self.spawn_delay_sp_bullet * FPS:
-            for ship in self.ships:
-                ship.shoot_sp_bullet()
-            self.spawn_timer_sp_bullet = 0
-        
-        # start shooting for regular bullet
-        if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
-            for ship in self.ships:
-                ship.shoot_reg_bullet()
-            self.spawn_timer_reg_bullet = 0
+            SHIP_CHANNEL.play(SHIP_MUSIC)
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
         if self.game_timer >= 60 and self.spawn_delay_sp_bullet > 30:
@@ -171,10 +162,9 @@ class Game:
         if self.bg_stars_x2 + WIN_WIDTH < 0:
             self.bg_stars_x2 = WIN_WIDTH
 
-
     def spawn_ship(self):
         # Create a new ship and add it to the groups
-        ship = Ships(self.all_sprites, self.ship_sp_bullets, self.ship_reg_bullets)
+        ship = Ships(self.all_sprites, self.ship_bullets)
         self.all_sprites.add(ship)
         self.ships.add(ship)
         
@@ -183,7 +173,6 @@ class Game:
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
         
-
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
 
@@ -207,17 +196,8 @@ class Game:
             self.update()
             self.draw()
             self.player_bullets.update()
-
-            # Check if ship music needs to be played
-            if not self.ship_music_playing and self.ship_exist:
-                SHIP_CHANNEL.play(SHIP_MUSIC, loops=-1)
-                self.ship_music_playing = True
-            elif self.ship_music_playing and not self.ship_exist:
-                SHIP_CHANNEL.stop()
-                self.ship_music_playing = False
                 
         # Stop music before quitting
         MUSIC_CHANNEL.stop()
-        SHIP_CHANNEL.stop()
         self.running = False
 
