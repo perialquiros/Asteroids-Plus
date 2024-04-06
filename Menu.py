@@ -1,11 +1,7 @@
 import pygame
-from sprites import *
-from config import *
-from ship import *
-from asteroid import *
-from button import *
 from AsteroidsRound import *
 from shipSelectScreen import *
+from button import *
 
 class Menu:
     def __init__(self):

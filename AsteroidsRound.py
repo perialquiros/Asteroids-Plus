@@ -1,9 +1,11 @@
 import pygame
 from sprites import *
 from config import *
-import sys
 from ship import *
 from asteroid import *
+import sys
+from powerups import *
+import time
 
 class Game:
     # set the timer for ship spawn
@@ -11,7 +13,7 @@ class Game:
     spawn_timer_ship = 0
     spawn_timer_reg_bullet = 0
     spawn_timer_sp_bullet = 0
-    spawn_delay_ship = 30
+    spawn_delay_ship = 20
     spawn_delay_reg_bullet = 20
     spawn_delay_sp_bullet = 60
     ship_exist = False
@@ -41,8 +43,15 @@ class Game:
         self.ship_reg_bullets = pygame.sprite.Group()
         self.ships = pygame.sprite.Group()
         self.asteroids = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
 
         self.player_bullets = pygame.sprite.Group()
+
+        # update all variables
+        self.spawn_timer_powerup = 0
+
+        # Start the ship music
+        self.ship_music_playing = False
 
     def new(self):
         
@@ -80,7 +89,12 @@ class Game:
         self.spawn_timer_reg_bullet += 1
         self.game_timer += 1
         self.asteroid_timer += 1
+        self.spawn_timer_powerup += 1
         
+        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
+        
+        pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
+
         self.asteroid_alg()
 
         #update direction for special bullet
@@ -91,6 +105,10 @@ class Game:
         # move the ship
         for ship in self.ships:
             ship.move()
+
+        # check if player obtained the powerup
+        for powerup in self.powerups:
+            powerup.update()
 
         # create the ship based on time interval
         if self.spawn_timer_ship >= self.spawn_delay_ship * FPS:
@@ -104,7 +122,7 @@ class Game:
                 ship.shoot_sp_bullet()
             self.spawn_timer_sp_bullet = 0
         
-        # Start shooting for regular bullet
+        # start shooting for regular bullet
         if self.ship_exist and self.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
             for ship in self.ships:
                 ship.shoot_reg_bullet()
@@ -118,6 +136,13 @@ class Game:
                 self.spawn_delay_reg_bullet -= 5
             self.spawn_delay_sp_bullet -= 5
             self.game_timer = 0
+        
+        # spawn powerups based off the game time
+        if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
+            powerup = Powerups(self.all_sprites, self.player)
+            self.all_sprites.add(powerup)
+            self.powerups.add(powerup)
+            self.spawn_timer_powerup = 0
         
     #create background screen for game
     def draw(self):
@@ -172,12 +197,27 @@ class Game:
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
     def main(self):
+        # Start the background music
+        MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
+
         #game loop
         self.new()
         while self.playing:
             self.events()
             self.update()
             self.draw()
+            self.player_bullets.update()
 
+            # Check if ship music needs to be played
+            if not self.ship_music_playing and self.ship_exist:
+                SHIP_CHANNEL.play(SHIP_MUSIC, loops=-1)
+                self.ship_music_playing = True
+            elif self.ship_music_playing and not self.ship_exist:
+                SHIP_CHANNEL.stop()
+                self.ship_music_playing = False
+                
+        # Stop music before quitting
+        MUSIC_CHANNEL.stop()
+        SHIP_CHANNEL.stop()
         self.running = False
 
