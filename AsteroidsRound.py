@@ -100,7 +100,6 @@ class Game:
             ship.check_collision(self.player_bullets)
 
             # start shooting for regular bullet
-            print(ship.spawn_timer_reg_bullet, self.spawn_delay_reg_bullet * FPS)
             if ship.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
                 ship.shoot_reg_bullet()
                 ship.spawn_timer_reg_bullet = 0
