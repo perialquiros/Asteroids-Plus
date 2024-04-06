@@ -9,11 +9,10 @@ import sys
 class Ships(pygame.sprite.Sprite):
 
     # create the ship
-    def __init__(self, all_sprites, sp_bullets, reg_bullets):
+    def __init__(self, all_sprites, ship_bullets):
         super().__init__()
         self.all_sprites = all_sprites
-        self.ship_sp_bullets = sp_bullets
-        self.ship_reg_bullets = reg_bullets
+        self.ship_bullets = ship_bullets
         
         # adjust imported image
         og_image = pygame.image.load('Images/ship.png')
@@ -21,8 +20,14 @@ class Ships(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x, self.rect.y, self.direction = self.rand_entry()
 
-        # sets the ship speed of movement
+        # set all values
         self.speed = 1
+        self.ship_exist = True
+        self.spawn_timer_sp_bullet = 0
+        self.spawn_timer_reg_bullet = 0
+
+        self.ship_sp_bullets = pygame.sprite.Group()
+        self.ship_reg_bullets = pygame.sprite.Group()
 
     # generate the random entry position
     def rand_entry(self):
@@ -107,12 +112,26 @@ class Ships(pygame.sprite.Sprite):
         reg_bullet = ship_reg_bullet(self.rect.centerx, self.rect.centery)
         self.all_sprites.add(reg_bullet)
         self.ship_reg_bullets.add(reg_bullet)
+        self.ship_bullets.add(reg_bullet)
 
     def shoot_sp_bullet(self):
         # spawn special bullet at the ship's current position, targets the player
         sp_bullet = ship_sp_bullet(self.rect.centerx, self.rect.centery)
         self.all_sprites.add(sp_bullet)
         self.ship_sp_bullets.add(sp_bullet)
+        self.ship_bullets.add(sp_bullet)
+
+    def check_collision(self, player_bullets):
+        for bullet in player_bullets:
+            if pygame.sprite.collide_rect(self, bullet):
+                # Remove the ship and the bullet from the game
+                self.kill()
+                bullet.kill()
+                for bullets in self.ship_reg_bullets:
+                    bullets.kill()
+                for bullets in self.ship_sp_bullets:
+                    bullets.kill()
+                self.ship_exist = False
 
 class ship_sp_bullet(pygame.sprite.Sprite):
     
