@@ -22,9 +22,10 @@ class Game:
     asteroid_spawn_delay = 5
     lives = 3
 
-
-    def __init__(self):
+    def __init__(self, selected_ship=0):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+
+        self.selected_ship = selected_ship
 
         self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
         self.background = pygame.transform.scale(self.background, (WIN_WIDTH, WIN_HEIGHT))
@@ -62,7 +63,15 @@ class Game:
         self.enemies = pygame.sprite.LayeredUpdates()
 
         #create player at middle of screen
-        self.player = Player(self, (WIN_WIDTH/TILESIZE)/2, (WIN_HEIGHT/TILESIZE)/2)
+        ship_image_list = SHIP_A
+        if self.selected_ship == 1:
+            ship_image_list = SHIP_B
+        elif self.selected_ship == 2:
+            ship_image_list = SHIP_C
+        elif self.selected_ship == 3:
+            ship_image_list = SHIP_D
+
+        self.player = Player(self, (WIN_WIDTH/TILESIZE)/2, (WIN_HEIGHT/TILESIZE)/2, ship_image_list)
     
     def events(self):
         for event in pygame.event.get():
@@ -192,6 +201,7 @@ class Game:
         MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
 
         #game loop
+        self.new()
         while self.playing:
             self.events()
             self.update()

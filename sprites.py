@@ -5,7 +5,7 @@ import random
 
 class Player(pygame.sprite.Sprite):
     
-    def __init__(self, game, x, y):
+    def __init__(self, game, x, y, image_list):
 
         self.game = game
         self._layer = PLAYER_LAYER
@@ -22,15 +22,16 @@ class Player(pygame.sprite.Sprite):
         self.width = TILESIZE
         self.height = TILESIZE
 
-        # create player (TEMPORARY look)
-        self.og_image = pygame.image.load('Images/ships/ship-a/ship-a1.png').convert_alpha()
+        # create player
+        self.image_list = image_list 
+        self.og_image = self.image_list[0]
         self.image = self.og_image
-        self.damaged_image = pygame.image.load('Images/ships/ship-a/ship-a-damaged.png').convert_alpha()
+        self.damaged_image = self.image_list[3]
         self.damage_loop = 0
 
         # self.image.get_rect() returns a new rectangle covering the entire surface of `self.image`. This rectangle (rect) is used to position the sprite on the screen.
         # it's important for collision detection and rendering the sprite at its current position.
-        self.rect = self.image.get_rect()
+        self.rect = self.og_image.get_rect()
 
         # set player's rect x, y positions
         self.rect.x = self.x
