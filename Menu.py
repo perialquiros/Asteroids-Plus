@@ -16,6 +16,8 @@ class Menu:
         self.background = pygame.transform.scale(self.background, (WIN_WIDTH, WIN_HEIGHT))
         stars_image = pygame.image.load('Images/backgrounds/space-stars.png')
         self.bg_stars = pygame.transform.scale(stars_image, (WIN_WIDTH, WIN_HEIGHT))
+        self.shipicon = pygame.image.load('Images/ships/ship-a/ship-a-damaged.png')
+        
         # init vars for background movement
         self.bg_stars_x1 = 0
         self.bg_stars_x2 = WIN_WIDTH
@@ -23,22 +25,22 @@ class Menu:
         self.clock = pygame.time.Clock()
 
         self.running = True
-        self.playButton = Button((WIN_WIDTH/2 - 50, WIN_HEIGHT/2 - 150), (100, 100), (0,255,0), "PLAY")
-        self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), (0, 255, 0), "CUSTOMIZE")
-        self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), (0,255,0), "EXIT")
+        self.playButton = Button((WIN_WIDTH/2 - 50, WIN_HEIGHT/2 - 150), (100, 100), WHITE, "PLAY")
+        self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), WHITE, "SHIP", 'Images/ships/ship-a/ship-a-damaged.png')
+        self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         
         
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
-        
+       
         self.clock.tick(FPS) #update the screen based on FPS
         pygame.mouse.set_visible(True)
         
-        self.playButton.draw(self.screen)
-        self.shipSelect.draw(self.screen)
-        self.exitButton.draw(self.screen)
+        self.playButton.draw(self.screen, BLACK)
+        self.shipSelect.draw(self.screen, BLACK)
+        self.exitButton.draw(self.screen, BLACK)
     
         pygame.display.update()
 
@@ -56,6 +58,7 @@ class Menu:
             self.bg_stars_x2 = WIN_WIDTH
 
     def play(self):
+        selected_ship = 0
         while True:
             m.draw()
             m.update_background()
@@ -68,12 +71,13 @@ class Menu:
                         pygame.quit()
 
                 if self.playButton.is_clicked(event):
-                        g = Game() #init Game class
+                        g = Game(selected_ship) #init Game class
                         g.new() #create a new game everytime we run
                         while g.running:
                             g.main()
                 if self.shipSelect.is_clicked(event):
                     select = ShipSelection()
+                    selected_ship = select.main()
                     while select.running:
                         select.main()
 
