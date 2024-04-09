@@ -2,6 +2,7 @@ import pygame
 from AsteroidsRound import *
 from shipSelectScreen import *
 from button import *
+from leaderboard import *
 
 class Menu:
     def __init__(self):
@@ -25,24 +26,11 @@ class Menu:
         self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), WHITE, "SHIP", 'Images/ships/ship-a/ship-a-damaged.png')
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         
+        self.leaderboard = LeaderBoard()
         
-    def scoreBoard():
-        # load the previous score if it exists
-        try:
-            with open('score.dat', 'rb') as file:
-                score = pickle.load(file)
-        except:
-            score = 0
 
-        print "High score: %d" % score
-
-        # your game code goes here
-        # let's say the user scores a new high-score of 10
-        score = 10;
-
-        # save the score
-        with open('score.dat', 'wb') as file:
-            pickle.dump(score, file)
+        self.newscore = 0
+    
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
@@ -75,6 +63,7 @@ class Menu:
         while True:
             m.draw()
             m.update_background()
+            self.leaderboard.save_highscore(self.newscore)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -87,7 +76,8 @@ class Menu:
                         g = Game(selected_ship) #init Game class
                         g.new() #create a new game everytime we run
                         while g.running:
-                            g.main()
+                            self.newscore = g.main()
+
                 if self.shipSelect.is_clicked(event):
                     select = ShipSelection()
                     selected_ship = select.main()

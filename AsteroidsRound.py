@@ -210,4 +210,6 @@ class Game:
         # Stop music before quitting
         MUSIC_CHANNEL.stop()
         self.running = False
+        self.player.score = 10
+        return self.player.score
 
