@@ -29,7 +29,7 @@ DAMAGE_LOOP = 0
 
 # speeds (temporary)
 PLAYER_SPEED = 3
-ASTEROID_SPEED = 1
+ASTEROID_SPEED = 0.7
 
 #colors
 GREEN = (0, 255, 0)
@@ -99,6 +99,16 @@ SHIP_D_BUTTON = [
 ]
 
 SELECTED_SHIP = 0 # default ship-a
+
+# images for explosion animation
+EXPLOSION = [
+    pygame.image.load('Images/Explosions/explosions-a1.png').convert_alpha(),
+    pygame.image.load('Images/Explosions/explosions-a2.png').convert_alpha(),
+    pygame.image.load('Images/Explosions/explosions-a3.png').convert_alpha(),
+    pygame.image.load('Images/Explosions/explosions-a4.png').convert_alpha(),
+    pygame.image.load('Images/Explosions/explosions-a5.png').convert_alpha(),
+    pygame.image.load('Images/Explosions/explosions-a6.png').convert_alpha()
+]
 
 # player bullet variables
 BULLET_SPEED = 4

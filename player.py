@@ -93,7 +93,7 @@ class Player(pygame.sprite.Sprite):
            
 
     def shoot_regular_bullet(self):
-        bullet = RegularBullet(self.rect.centerx, self.rect.centery, self.angle)
+        bullet = RegularBullet(self, self.rect.centerx, self.rect.centery, self.angle)
         rad_angle = math.radians(self.angle)  # Convert angle to radians
         bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
         bullet.vel_y = math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
@@ -188,8 +188,9 @@ class Player(pygame.sprite.Sprite):
                     break
             
 class RegularBullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, angle):
+    def __init__(self, game, x, y, angle):
         super().__init__()
+        self.game = game
         self.image = pygame.Surface((BULLET_SIZE, BULLET_SIZE))
         self.image.fill(BULLET_COLOR)
         self.rect = self.image.get_rect(center=(x, y))
@@ -202,7 +203,7 @@ class RegularBullet(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += self.vel_x
         self.rect.y += self.vel_y
-        
+        #self.collide(self.game.asteroids)
         # destroy bullet exists for more than 2 seconds
         if pygame.time.get_ticks() - self.creation_time > 2000: 
             self.kill()
@@ -220,12 +221,6 @@ class RegularBullet(pygame.sprite.Sprite):
         if self.rect.left > WIN_WIDTH:
             self.rect.y = WIN_HEIGHT - self.rect.y
             self.rect.x = 0
-
-    def collide(self, spriteGroup):
-        for asteroid in spriteGroup:
-            if pygame.sprite.collide_circle(self, asteroid):                
-                self.kill()
-                asteroid.take_damage()
 
 class SpecialBullet(pygame.sprite.Sprite):
     def __init__(self, x, y, angle):
@@ -260,10 +255,5 @@ class SpecialBullet(pygame.sprite.Sprite):
         if self.rect.left > WIN_WIDTH:
             self.rect.y = WIN_HEIGHT - self.rect.y
             self.rect.x = 0
-
-    def collide(self, spriteGroup):
-        for asteroid in spriteGroup:
-            if pygame.sprite.collide_circle(self, asteroid):
-                self.kill()
-                asteroid.take_damage()
+        
         
