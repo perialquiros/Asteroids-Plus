@@ -1,5 +1,5 @@
 import pygame
-from sprites import *
+from player import *
 from ship import *
 from config import *
 from asteroid import *

@@ -1,6 +1,6 @@
 import pygame
 from config import *
-from sprites import *
+from player import *
 import math
 import random
 
