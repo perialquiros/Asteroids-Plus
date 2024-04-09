@@ -75,6 +75,16 @@ class Game:
                 self.playing = False
                 self.running = False
 
+    def updateScore(self):
+        #check collisions and update score
+        if(pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)):
+            #if(self.asteroids.asteroid.width == BIG_ASTEROID_SIZE):
+            #        self.player.score += 20
+            #if(self.asteroids.asteroid.width == MED_ASTEROID_SIZE):
+            #    self.player.score+=40
+            #else:
+            self.player.score +=20
+        
     def update(self):
         #game loop updates
         self.all_sprites.update()
@@ -84,7 +94,7 @@ class Game:
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
         
-        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
+        self.updateScore()
         
         #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
         self.asteroid_alg()
@@ -142,9 +152,11 @@ class Game:
         self.clock.tick(FPS) #update the screen based on FPS
 
         lives_text = self.font.render('Lives: ' + str(self.player.lives), False, WHITE)
+        score_text = self.font.render('Score: ' + str(self.player.score), False, WHITE)
         
         # Draw the lives text
         self.screen.blit(lives_text, (10, 10))
+        self.screen.blit(score_text, (10,40))
         pygame.display.update()
 
     def update_background(self):

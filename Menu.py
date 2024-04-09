@@ -26,6 +26,23 @@ class Menu:
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         
         
+    def scoreBoard():
+        # load the previous score if it exists
+        try:
+            with open('score.dat', 'rb') as file:
+                score = pickle.load(file)
+        except:
+            score = 0
+
+        print "High score: %d" % score
+
+        # your game code goes here
+        # let's say the user scores a new high-score of 10
+        score = 10;
+
+        # save the score
+        with open('score.dat', 'wb') as file:
+            pickle.dump(score, file)
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
