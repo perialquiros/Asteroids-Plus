@@ -9,7 +9,7 @@ import time
 
 class Game:
     asteroid_timer = 0
-    asteroid_spawn_delay = 5
+    asteroid_spawn_delay = 1
     lives = 3
 
     def __init__(self, selected_ship=0):
@@ -84,10 +84,18 @@ class Game:
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
         
-        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
+        #pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
         
         #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
         self.asteroid_alg()
+        for asteroid in self.asteroids:
+           if asteroid.check_collision(self.player_bullets):
+            if asteroid.width != SM_ASTEROID_SIZE:
+                new_size = asteroid.getSizeBelow()
+                new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                self.spawn_asteroid(new_size, new_x, new_y)
+                self.spawn_asteroid(new_size, new_x, new_y)
+
         
         # move the ship
         for ship in self.ships:
@@ -139,6 +147,8 @@ class Game:
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
         self.all_sprites.draw(self.screen) 
+        for asteroid in self.asteroids:
+            self.screen.blit(asteroid.image, asteroid.rect)
         self.clock.tick(FPS) #update the screen based on FPS
 
         lives_text = self.font.render('Lives: ' + str(self.player.lives), False, WHITE)
@@ -166,8 +176,8 @@ class Game:
         self.all_sprites.add(ship)
         self.ships.add(ship)
         
-    def spawn_asteroid(self, size):
-        asteroid = Asteroid( self, 0, 0, size)
+    def spawn_asteroid(self, size, x = None, y = None):
+        asteroid = Asteroid(self, size, x, y)
         self.all_sprites.add(asteroid)
         self.asteroids.add(asteroid)
         
@@ -175,9 +185,9 @@ class Game:
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
 
         if self.game_timer >= 30:
-            self.asteroid_spawn_delay = 4
+            self.asteroid_spawn_delay = 0.9
         if self.game_timer >= 60:
-            self.asteroid_spawn_delay = 3
+            self.asteroid_spawn_delay = 0.8
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
             self.spawn_asteroid(size)
