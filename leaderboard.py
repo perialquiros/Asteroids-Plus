@@ -1,6 +1,6 @@
 import pygame
 from config import *
-
+from button import *
 
 class LeaderBoard():
     # Define file path for high scores
@@ -9,6 +9,19 @@ class LeaderBoard():
         self.highscore_file = "highscores.txt"
         pygame.init()
         self.running = True
+        self.back_Button = Button((WIN_WIDTH/2 - 75, WIN_HEIGHT/2 + 150), (150, 100), WHITE, "BACK")
+        self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
+
+        self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
+        self.background = pygame.transform.scale(self.background, (WIN_WIDTH, WIN_HEIGHT))
+        stars_image = pygame.image.load('Images/backgrounds/space-stars.png')
+        self.bg_stars = pygame.transform.scale(stars_image, (WIN_WIDTH, WIN_HEIGHT))
+        self.bg_stars_x1 = 0
+        self.bg_stars_x2 = WIN_WIDTH
+
+        self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
+
 
     def load_highscores(self):
         """Loads high scores from the file"""
@@ -38,14 +51,24 @@ class LeaderBoard():
         highscores = self.load_highscores()
         return score > highscores[-1] if highscores else True
     
-    def view(self):
-        #display leaderboard
-        screen.fill(BLACK)  # Clear the screen
-        self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
-        # Title text
+    def draw(self):
+        self.screen.blit(self.background, (0,0))
+        self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
+        self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+        
+        self.clock.tick(FPS) #update the screen based on FPS
+        pygame.mouse.set_visible(True)
+        
+        self.back_Button.draw(self.screen, BLACK)
+        
         title_surface = self.font.render("Leaderboard", True, WHITE)
         title_rect = title_surface.get_rect(center=(screen.get_width() // 2, 50))
+        
+        points_surface = self.font.render("Points", True, WHITE)
+        points_rect = points_surface.get_rect(center=(screen.get_width() // 2 + 350, 80))
         screen.blit(title_surface, title_rect)
+        screen.blit(points_surface, points_rect)
+
 
         # Leaderboard entries
         y_pos = 100
@@ -69,4 +92,34 @@ class LeaderBoard():
         # Update the display
         pygame.display.flip()
         
+        
+        pygame.display.update()
+    
+    def updateBackground(self):
+         # Move backgrounds to the left
+        self.bg_stars_x1 -= 1  # Adjust speed as necessary
+        self.bg_stars_x2 -= 1
+        
+        # If the first image is completely off-screen
+        if self.bg_stars_x1 + WIN_WIDTH < 0:
+            self.bg_stars_x1 = WIN_WIDTH
+            
+        # If the second image is completely off-screen
+        if self.bg_stars_x2 + WIN_WIDTH < 0:
+            self.bg_stars_x2 = WIN_WIDTH
+            
+    def view(self):
+        #display leaderboard
+        while(self.running):
+            self.draw()
+            self.updateBackground()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.running = False
+                if self.back_Button.is_clicked(event):
+                    self.running = False
+       
         
