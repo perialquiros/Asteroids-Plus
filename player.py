@@ -48,6 +48,8 @@ class Player(pygame.sprite.Sprite):
         self.angle = 0
         self.player_bullets = self.game.player_bullets
         
+        self.score = 0
+        
     #update player sprite
     def update(self):
 
@@ -62,6 +64,7 @@ class Player(pygame.sprite.Sprite):
         self.collide(self.game.ship_bullets)
         self.collide(self.game.asteroids)
         self.collide(self.game.ships)
+        
 
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
@@ -87,6 +90,7 @@ class Player(pygame.sprite.Sprite):
 
         self.rotate()
         self.handle_input()
+           
 
     def shoot_regular_bullet(self):
         bullet = RegularBullet(self, self.rect.centerx, self.rect.centery, self.angle)

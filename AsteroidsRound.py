@@ -6,11 +6,13 @@ from asteroid import *
 import sys
 from powerups import *
 import time
+from leaderboard import *
+import time
+
 
 class Game:
     asteroid_timer = 0
     asteroid_spawn_delay = 1
-    lives = 3
 
     def __init__(self, selected_ship=0):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -75,6 +77,16 @@ class Game:
                 self.playing = False
                 self.running = False
 
+    def updateScore(self):
+        #check collisions and update score
+        if(pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)):
+            #if(self.asteroids.asteroid.width == BIG_ASTEROID_SIZE):
+            #        self.player.score += 20
+            #if(self.asteroids.asteroid.width == MED_ASTEROID_SIZE):
+            #    self.player.score+=40
+            #else:
+            self.player.score +=20
+        
     def update(self):
         #game loop updates
         self.all_sprites.update()
@@ -84,6 +96,7 @@ class Game:
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
         
+        self.updateScore()
         #pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
         
         #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
@@ -152,9 +165,11 @@ class Game:
         self.clock.tick(FPS) #update the screen based on FPS
 
         lives_text = self.font.render('Lives: ' + str(self.player.lives), False, WHITE)
+        score_text = self.font.render('Score: ' + str(self.player.score), False, WHITE)
         
         # Draw the lives text
         self.screen.blit(lives_text, (10, 10))
+        self.screen.blit(score_text, (10,40))
         pygame.display.update()
 
     def update_background(self):
@@ -193,6 +208,30 @@ class Game:
             self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
+    def updateLeaderboard(self):
+
+        leaderboard = LeaderBoard()
+        leaderboard.save_highscore(self.player.score)
+        if (leaderboard.check_new_highscore(self.player.score)):
+            t_end = time.time() + 3
+            while time.time() < t_end:
+                self.screen.blit(self.background, (0,0))
+                self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
+                self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+                self.all_sprites.update()
+                self.update_background()
+                self.all_sprites.draw(self.screen) 
+
+                text_surface = self.font.render("NEW HIGHSCORE!", True, (WHITE))  # Black text
+
+                # Center text
+                text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                self.screen.blit(text_surface, text_rect)
+
+                # Update the display 
+                pygame.display.update()
+
+        
     def main(self):
         # Start the background music
         MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
@@ -206,6 +245,9 @@ class Game:
             self.player_bullets.update()
                 
         # Stop music before quitting
+        self.updateLeaderboard()
         MUSIC_CHANNEL.stop()
         self.running = False
+        
+        return 0
 
