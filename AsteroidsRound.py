@@ -6,11 +6,13 @@ from asteroid import *
 import sys
 from powerups import *
 import time
+from leaderboard import *
+import time
+
 
 class Game:
     asteroid_timer = 0
     asteroid_spawn_delay = 5
-    lives = 3
 
     def __init__(self, selected_ship=0):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -195,6 +197,30 @@ class Game:
             self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
 
+    def updateLeaderboard(self):
+
+        leaderboard = LeaderBoard()
+        leaderboard.save_highscore(self.player.score)
+        if (leaderboard.check_new_highscore(self.player.score)):
+            t_end = time.time() + 3
+            while time.time() < t_end:
+                self.screen.blit(self.background, (0,0))
+                self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
+                self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+                self.all_sprites.update()
+                self.update_background()
+                self.all_sprites.draw(self.screen) 
+
+                text_surface = self.font.render("NEW HIGHSCORE!", True, (WHITE))  # Black text
+
+                # Center text
+                text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                self.screen.blit(text_surface, text_rect)
+
+                # Update the display 
+                pygame.display.update()
+
+        
     def main(self):
         # Start the background music
         MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
@@ -208,8 +234,9 @@ class Game:
             self.player_bullets.update()
                 
         # Stop music before quitting
+        self.updateLeaderboard()
         MUSIC_CHANNEL.stop()
         self.running = False
-        self.player.score = 10
-        return self.player.score
+        
+        return 0
 

@@ -27,9 +27,7 @@ class Menu:
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         
         self.leaderboard = LeaderBoard()
-        
-
-        self.newscore = 0
+    
     
     def draw(self):
         self.screen.blit(self.background, (0,0))
@@ -63,7 +61,7 @@ class Menu:
         while True:
             m.draw()
             m.update_background()
-            self.leaderboard.save_highscore(self.newscore)
+            
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -76,8 +74,7 @@ class Menu:
                         g = Game(selected_ship) #init Game class
                         g.new() #create a new game everytime we run
                         while g.running:
-                            self.newscore = g.main()
-
+                            g.main()
                 if self.shipSelect.is_clicked(event):
                     select = ShipSelection()
                     selected_ship = select.main()
