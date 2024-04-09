@@ -223,14 +223,7 @@ class RegularBullet(pygame.sprite.Sprite):
 
     def collide(self, spriteGroup):
         for asteroid in spriteGroup:
-            if pygame.sprite.collide_circle(self, asteroid):
-                print("HERE")
-                if(asteroid.size == BIG_ASTEROID_SIZE):
-                    self.score += 20
-                if(asteroid.size == MED_ASTEROID_SIZE):
-                    self.score+=40
-                else:
-                    self.score +=100
+            if pygame.sprite.collide_circle(self, asteroid):                
                 self.kill()
                 asteroid.take_damage()
 
@@ -271,7 +264,6 @@ class SpecialBullet(pygame.sprite.Sprite):
     def collide(self, spriteGroup):
         for asteroid in spriteGroup:
             if pygame.sprite.collide_circle(self, asteroid):
-                print("HERE")
                 self.kill()
                 asteroid.take_damage()
         

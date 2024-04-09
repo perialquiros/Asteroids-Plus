@@ -25,8 +25,8 @@ class Menu:
         self.playButton = Button((WIN_WIDTH/2 - 50, WIN_HEIGHT/2 - 150), (100, 100), WHITE, "PLAY")
         self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), WHITE, "SHIP", 'Images/ships/ship-a/ship-a-damaged.png')
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
+        self.statButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 300), (100, 100), WHITE, "STATS")
         
-        self.leaderboard = LeaderBoard()
     
     
     def draw(self):
@@ -40,6 +40,7 @@ class Menu:
         self.playButton.draw(self.screen, BLACK)
         self.shipSelect.draw(self.screen, BLACK)
         self.exitButton.draw(self.screen, BLACK)
+        self.statButton.draw(self.screen,BLACK)
     
         pygame.display.update()
 
@@ -80,6 +81,12 @@ class Menu:
                     selected_ship = select.main()
                     while select.running:
                         select.main()
+                
+                if self.statButton.is_clicked(event):
+                    # exit
+                    leaderboard = LeaderBoard()
+                    while leaderboard.running:
+                        leaderboard.view()
 
                 if self.exitButton.is_clicked(event):
                     # exit
