@@ -101,6 +101,7 @@ SHIP_D_BUTTON = [
 SELECTED_SHIP = 0 # default ship-a
 
 # images for explosion animation
+"""
 EXPLOSION = [
     pygame.image.load('Images/Explosions/explosions-a1.png').convert_alpha(),
     pygame.image.load('Images/Explosions/explosions-a2.png').convert_alpha(),
@@ -109,6 +110,7 @@ EXPLOSION = [
     pygame.image.load('Images/Explosions/explosions-a5.png').convert_alpha(),
     pygame.image.load('Images/Explosions/explosions-a6.png').convert_alpha()
 ]
+"""
 
 # player bullet variables
 BULLET_SPEED = 4
