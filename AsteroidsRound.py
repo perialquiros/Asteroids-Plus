@@ -38,7 +38,7 @@ class Game:
         # all variables for the ship class
         self.game_timer = 0
         self.spawn_timer_ship = 0
-        self.spawn_delay_ship = 2
+        self.spawn_delay_ship = 30
         self.spawn_delay_reg_bullet = 10
         self.spawn_delay_sp_bullet = 20
 

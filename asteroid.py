@@ -13,7 +13,7 @@ class Asteroid(pygame.sprite.Sprite):
         # add asteroid to sprite groups
         self.groups = self.game.all_sprites, self.game.enemies
         pygame.sprite.Sprite.__init__(self, self.groups)
-
+        self.size = size
         # randomly choose asteroid image based on its size
         if size == BIG_ASTEROID_SIZE:
             image = random.choice(['Images/asteroid-big/big-a.png', 'Images/asteroid-big/big-b.png', 'Images/asteroid-big/big-c.png'])
@@ -35,14 +35,15 @@ class Asteroid(pygame.sprite.Sprite):
         if x is not None and y is not None:
             self.rect.x = x
             self.rect.y = y
-            _, _, self.move_direction = self.rand_entry()
+            
         # if we are spawning asteroids out of bounds (for asteroid_alg())
         else:
-            self.rect.x, self.rect.y, self.move_direction = self.rand_entry() 
-
+            self.spawn_random_loc()
+            
+            print(f"no x and y entered - random choice - x = {self.rect.x} and y = {self.rect.y} ")
         # Set up the speed and angle
         self.speed = ASTEROID_SPEED
-        self.set_angle_and_velocity()
+        self.set_random_dir()
 
     # constantly update asteroid movement and wrap around
     def update(self):
@@ -50,49 +51,28 @@ class Asteroid(pygame.sprite.Sprite):
         self.wrap_around_screen()
 
     # generate the random entry position
-    def rand_entry(self):
-        side = random.choice(['top', 'bottom', 'left', 'right','top_left', 'top_right', 'bottom_left', 'bottom_right'])
+    def spawn_random_loc(self):
+        side = random.choice(['top', 'bottom', 'left', 'right'])
         if side == 'top':
-            return random.randint(0, WIN_WIDTH - self.rect.width), -self.rect.height, 'bottom'
+            self.rect.x = random.randrange(WIN_WIDTH + self.size)
+            self.rect.y = -self.size
         elif side == 'bottom':
-            return random.randint(0, WIN_WIDTH - self.rect.width), WIN_HEIGHT, 'top'
+            self.rect.x = random.randrange(WIN_WIDTH + self.size)
+            self.rect.y = WIN_HEIGHT
         elif side == 'left':
-            return -self.rect.width, random.randint(0, WIN_HEIGHT - self.rect.height), 'right'
+            self.rect.x = -self.size
+            self.rect.y = random.randrange(WIN_HEIGHT+self.size)
         elif side == 'right':
-            return WIN_WIDTH, random.randint(0, WIN_HEIGHT - self.rect.height), 'left'
-        elif side == 'top_left':
-            return -self.rect.width, -self.rect.height, 'bottom_right'
-        elif side == 'top_right':
-            return WIN_WIDTH, -self.rect.height, 'bottom_left'
-        elif side == 'bottom_left':
-            return -self.rect.width, WIN_HEIGHT, 'top_right'
-        elif side == 'bottom_right':
-            return WIN_WIDTH, WIN_HEIGHT, 'top_left'
+            self.rect.x = WIN_WIDTH
+            self.rect.y = random.randrange(WIN_HEIGHT+self.size)
 
-    # randomly set an angle for the asteroid to move
-    def set_angle_and_velocity(self):
-        # Set angle based on move_direction
-        if self.move_direction in ['top', 'bottom']:
-            self.angle = random.uniform(-45, 45)  # For top and bottom, limit the angle to 45 degrees left or right
-        elif self.move_direction in ['left', 'right']:
-            self.angle = random.uniform(135, 225)  # For left and right, aim mostly up or down
-        else:  # For corner spawns, use larger angle ranges
-            angle_ranges = {
-                'top_left': (45, 135),
-                'top_right': (-45, 45),
-                'bottom_left': (225, 315),
-                'bottom_right': (135, 225)
-            }
-            self.angle = random.uniform(*angle_ranges[self.move_direction])
-        
-        # Update velocity based on the angle
-        rad_angle = math.radians(self.angle)
-        if self.move_direction in ['top', 'bottom_right', 'top_right']:
-            self.x_change = self.speed * math.cos(rad_angle)
-            self.y_change = self.speed * math.sin(rad_angle)
-        else:  # Reverse direction for bottom and left spawns
-            self.x_change = -self.speed * math.cos(rad_angle)
-            self.y_change = -self.speed * math.sin(rad_angle)
+    def set_random_dir(self):
+        angle = random.uniform(0, 360)
+        speed = ASTEROID_SPEED
+        rad_angle = math.radians(angle)
+        self.x_change = speed * math.cos(rad_angle)
+        self.y_change = speed * math.sin(rad_angle)
+
 
     # move asteroid based on speed
     def move(self):
