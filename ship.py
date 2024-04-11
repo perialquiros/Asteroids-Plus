@@ -121,8 +121,8 @@ class Ships(pygame.sprite.Sprite):
         self.ship_sp_bullets.add(sp_bullet)
         self.ship_bullets.add(sp_bullet)
 
-    def check_collision(self, player_bullets):
-        for bullet in player_bullets:
+    def check_collision(self, group):
+        for bullet in group:
             if pygame.sprite.collide_rect(self, bullet):
                 # Remove the ship and the bullet from the game
                 self.kill()
@@ -132,6 +132,8 @@ class Ships(pygame.sprite.Sprite):
                 for bullets in self.ship_sp_bullets:
                     bullets.kill()
                 self.ship_exist = False
+                return True
+        return False
 
 class ship_sp_bullet(pygame.sprite.Sprite):
     

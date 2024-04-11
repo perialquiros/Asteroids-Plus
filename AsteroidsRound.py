@@ -38,7 +38,7 @@ class Game:
         # all variables for the ship class
         self.game_timer = 0
         self.spawn_timer_ship = 0
-        self.spawn_delay_ship = 30
+        self.spawn_delay_ship = 2
         self.spawn_delay_reg_bullet = 10
         self.spawn_delay_sp_bullet = 20
 
@@ -77,15 +77,7 @@ class Game:
                 self.playing = False
                 self.running = False
 
-    def updateScore(self):
-        #check collisions and update score
-        if(pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)):
-            #if(self.asteroids.asteroid.width == BIG_ASTEROID_SIZE):
-            #        self.player.score += 20
-            #if(self.asteroids.asteroid.width == MED_ASTEROID_SIZE):
-            #    self.player.score+=40
-            #else:
-            self.player.score +=20
+  
         
     def update(self):
         #game loop updates
@@ -95,21 +87,25 @@ class Game:
         self.game_timer += 1
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
-        
-        self.updateScore()
-        #pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
-        
-        #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
+ 
         self.asteroid_alg()
+        # check all collision for asteroid
         for asteroid in self.asteroids:
            if asteroid.check_collision(self.player_bullets):
             if asteroid.width != SM_ASTEROID_SIZE:
+                self.player.score += 10
                 new_size = asteroid.getSizeBelow()
                 new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
                 self.spawn_asteroid(new_size, new_x, new_y)
                 self.spawn_asteroid(new_size, new_x, new_y)
-
+            else:
+                self.player.score += 20
         
+        # check all collision for saucer
+        for ship in self.ships:
+            if ship.check_collision(self.player_bullets):
+                self.player.score += 30
+
         # move the ship
         for ship in self.ships:
             ship.spawn_timer_sp_bullet += 1
@@ -117,7 +113,6 @@ class Game:
             ship.move()
             for bullet in ship.ship_sp_bullets:
                 bullet.update_dir(self.player)
-            ship.check_collision(self.player_bullets)
 
             # start shooting for regular bullet
             if ship.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
