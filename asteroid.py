@@ -35,15 +35,17 @@ class Asteroid(pygame.sprite.Sprite):
         if x is not None and y is not None:
             self.rect.x = x
             self.rect.y = y
-            
+            self.side = None
         # if we are spawning asteroids out of bounds (for asteroid_alg())
         else:
             self.spawn_random_loc()
-            
-            print(f"no x and y entered - random choice - x = {self.rect.x} and y = {self.rect.y} ")
+
+        self.floating_x = float(self.rect.x)
+        self.floating_y = float(self.rect.y)
         # Set up the speed and angle
         self.speed = ASTEROID_SPEED
         self.set_random_dir()
+        
 
     # constantly update asteroid movement and wrap around
     def update(self):
@@ -52,22 +54,36 @@ class Asteroid(pygame.sprite.Sprite):
 
     # generate the random entry position
     def spawn_random_loc(self):
-        side = random.choice(['top', 'bottom', 'left', 'right'])
-        if side == 'top':
-            self.rect.x = random.randrange(WIN_WIDTH + self.size)
+        self.side = random.choice(['top', 'bottom', 'left', 'right'])
+        if self.side == 'top':
+            self.rect.x = random.randrange(WIN_WIDTH)
             self.rect.y = -self.size
-        elif side == 'bottom':
-            self.rect.x = random.randrange(WIN_WIDTH + self.size)
+        elif self.side == 'bottom':
+            self.rect.x = random.randrange(WIN_WIDTH)
             self.rect.y = WIN_HEIGHT
-        elif side == 'left':
+        elif self.side == 'left':
             self.rect.x = -self.size
-            self.rect.y = random.randrange(WIN_HEIGHT+self.size)
-        elif side == 'right':
+            self.rect.y = random.randrange(WIN_HEIGHT)
+        elif self.side == 'right':
             self.rect.x = WIN_WIDTH
-            self.rect.y = random.randrange(WIN_HEIGHT+self.size)
+            self.rect.y = random.randrange(WIN_HEIGHT)
 
     def set_random_dir(self):
-        angle = random.uniform(0, 360)
+
+        angle_ranges = {
+            'top': (225,315), #Downward angles
+            'bottom': (45, 135), #Upward angles
+            'left': (-45,45), # Rightward angles
+            'right': (135, 225) #Leftward angles
+        }
+        if self.side in angle_ranges:
+            angle = random.uniform(*angle_ranges[self.side])
+        else:
+            angle = random.uniform(0, 360)
+
+        if self.side == 'left':
+            angle = (angle + 360) % 360
+
         speed = ASTEROID_SPEED
         rad_angle = math.radians(angle)
         self.x_change = speed * math.cos(rad_angle)
@@ -76,8 +92,12 @@ class Asteroid(pygame.sprite.Sprite):
 
     # move asteroid based on speed
     def move(self):
-        self.rect.x += self.x_change
-        self.rect.y += self.y_change
+        self.floating_x += self.x_change
+        self.floating_y += self.y_change
+        self.rect.x = int(self.floating_x)
+        self.rect.y = int(self.floating_y)
+        #self.rect.x += self.x_change
+        #self.rect.y += self.y_change
 
     # ensure asteroid comes back around when moving out of screen
     def wrap_around_screen(self):

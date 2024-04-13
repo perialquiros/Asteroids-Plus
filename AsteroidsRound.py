@@ -12,7 +12,7 @@ import time
 
 class Game:
     asteroid_timer = 0
-    asteroid_spawn_delay = 1
+    asteroid_spawn_delay = 0.7
 
     def __init__(self, selected_ship=0):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -85,8 +85,8 @@ class Game:
         self.update_background()
         self.spawn_timer_ship += 1
         self.game_timer += 1
-        self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
+        self.asteroid_timer += 0.5
  
         self.asteroid_alg()
         # check all collision for asteroid
@@ -155,9 +155,15 @@ class Game:
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
         self.all_sprites.draw(self.screen) 
-        for asteroid in self.asteroids:
-            self.screen.blit(asteroid.image, asteroid.rect)
+        
         self.clock.tick(FPS) #update the screen based on FPS
+        minutes = self.game_timer // (60 * FPS)
+        seconds = (self.game_timer // FPS) % 60
+
+        # draw clock
+        time_text = self.font.render(f"Time: {minutes:02}-{seconds:02}", True, WHITE)
+        time_rect = time_text.get_rect(topright=(WIN_WIDTH - 10, 10))
+        self.screen.blit(time_text, time_rect)
 
         lives_text = self.font.render('Lives: ' + str(self.player.lives), False, WHITE)
         score_text = self.font.render('Score: ' + str(self.player.score), False, WHITE)
@@ -193,15 +199,41 @@ class Game:
         
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
-
-        if self.game_timer >= 30:
-            self.asteroid_spawn_delay = 0.9
-        if self.game_timer >= 60:
-            self.asteroid_spawn_delay = 0.8
+        current_minute = self.game_timer // (60 * FPS) 
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
-            self.spawn_asteroid(size)
+            if current_minute == 1:
+                self.asteroid_spawn_delay = 0.6
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 2:
+                self.asteroid_spawn_delay = 0.4
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 3:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 4:
+                self.asteroid_spawn_delay = 0.3
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 6:
+                self.asteroid_spawn_delay = 0.2
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            else:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
+    
 
     def updateLeaderboard(self):
 
