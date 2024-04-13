@@ -29,7 +29,7 @@ DAMAGE_LOOP = 0
 
 # speeds (temporary)
 PLAYER_SPEED = 3
-ASTEROID_SPEED = 0.7
+ASTEROID_SPEED = 1
 
 #colors
 GREEN = (0, 255, 0)
