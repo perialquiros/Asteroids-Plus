@@ -3,6 +3,7 @@ from AsteroidsRound import *
 from shipSelectScreen import *
 from button import *
 from leaderboard import *
+from instructions import *
 
 class Menu:
     def __init__(self):
@@ -26,8 +27,8 @@ class Menu:
         self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), WHITE, "SHIP", 'Images/ships/ship-a/ship-a-damaged.png')
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         self.statButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 300), (100, 100), WHITE, "STATS")
+        self.instructionsButton = Button((WIN_WIDTH - 120, WIN_HEIGHT - 70), (100, 50), WHITE, "Help")
         
-    
     
     def draw(self):
         self.screen.blit(self.background, (0,0))
@@ -41,6 +42,7 @@ class Menu:
         self.shipSelect.draw(self.screen, BLACK)
         self.exitButton.draw(self.screen, BLACK)
         self.statButton.draw(self.screen,BLACK)
+        self.instructionsButton.draw(self.screen,BLACK)
     
         pygame.display.update()
 
@@ -56,6 +58,10 @@ class Menu:
         # If the second image is completely off-screen
         if self.bg_stars_x2 + WIN_WIDTH < 0:
             self.bg_stars_x2 = WIN_WIDTH
+    
+    def show_instructions(self):
+        inst_menu = InstructionsMenu(self.screen)
+        inst_menu.run()
 
     def play(self):
         selected_ship = 0
@@ -81,7 +87,10 @@ class Menu:
                     selected_ship = select.main()
                     while select.running:
                         select.main()
-                
+
+                if self.instructionsButton.is_clicked(event):
+                    self.show_instructions()
+
                 if self.statButton.is_clicked(event):
                     # exit
                     leaderboard = LeaderBoard()
