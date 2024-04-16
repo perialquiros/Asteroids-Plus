@@ -125,8 +125,10 @@ class Asteroid(pygame.sprite.Sprite):
             if pygame.sprite.collide_circle(self, bullet):
                 self.kill()
                 bullet.kill()
+                ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
         for bullet in ship_bullets: 
             if pygame.sprite.collide_circle(self, bullet):
                 self.kill()
                 bullet.kill()
+                ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
                 

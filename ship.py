@@ -139,6 +139,7 @@ class Ships(pygame.sprite.Sprite):
                 # Remove the ship and the bullet from the game
                 self.kill()
                 asteroid.kill()
+                ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
                 for bullets in self.ship_reg_bullets:
                     bullets.kill()
                 for bullets in self.ship_sp_bullets:
