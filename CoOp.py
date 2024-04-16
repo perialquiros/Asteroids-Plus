@@ -43,6 +43,8 @@ class CoOp:
         # update all variables
         self.spawn_timer_powerup = 0
         self.game_timer = 0
+        
+        self.deadPlayer = 0 # 1 means player 1 died, 2 means player 2 died
 
 
     def spawn_asteroid(self, size, x = None, y = None):
@@ -74,8 +76,8 @@ class CoOp:
         elif self.selected_ship == 3:
             ship_image_list = SHIP_D
 
-        self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2-10, (self.Height/TILESIZE)/2, 1, SHIP_A)
-        self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2+5, (self.Height/TILESIZE)/2, 2, SHIP_B)
+        self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2+5, (self.Height/TILESIZE)/2, 1, SHIP_A)
+        self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2-10, (self.Height/TILESIZE)/2, 2, SHIP_B)
 
     #create background screen for game
     def draw(self):
@@ -157,8 +159,33 @@ class CoOp:
             self.update()
             self.draw()
                 
+        self.playerLost()
+            
         # Stop music before quitting
         MUSIC_CHANNEL.stop()
         self.running = False
         
         return 0
+    
+    
+    def playerLost(self):
+
+            t_end = time.time() + 3
+            while time.time() < t_end:
+                self.screen.blit(self.background, (0,0))
+                self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
+                self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+                self.all_sprites.update()
+                self.update_background()
+                self.all_sprites.draw(self.screen) 
+
+                if(self.dead_player == 1):
+                    text_surface = self.font.render("PLAYER 2 WINS", True, (WHITE))  
+                if(self.dead_player == 2):
+                    text_surface = self.font.render("PLAYER 1 WINS", True, (WHITE))  
+                # Center text
+                text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                self.screen.blit(text_surface, text_rect)
+
+                # Update the display 
+                pygame.display.update()

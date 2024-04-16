@@ -61,8 +61,6 @@ class PlayerCoOp(pygame.sprite.Sprite):
         #check collisions
         self.collide(self.game.asteroids)
 
-        
-
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
         self.decelerate()  # Apply deceleration to slow down the player over time
@@ -158,5 +156,7 @@ class PlayerCoOp(pygame.sprite.Sprite):
                 if self.lives <= 0:
                     self.kill()
                     self.game.playing = False
+                    self.game.dead_player = self.playerNum
                     break
+                    
             
