@@ -9,7 +9,6 @@ import time
 from leaderboard import *
 import time
 
-
 class Game:
     asteroid_timer = 0
     asteroid_spawn_delay = 0.7
@@ -54,7 +53,14 @@ class Game:
         
         #new game
         self.playing = True
-        
+
+        #reset asteroid timer and spawn delay
+        self.asteroid_timer = 0
+        self.asteroid_spawn_delay = 1
+
+        # Clear existing asteroid sprites
+        self.asteroids.empty()
+
         #take all sprites and bunch them together so we can update all at once if needed
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
@@ -69,6 +75,8 @@ class Game:
             ship_image_list = SHIP_D
 
         self.player = Player(self, (WIN_WIDTH/TILESIZE)/2, (WIN_HEIGHT/TILESIZE)/2, ship_image_list)
+
+
     
     def events(self):
         for event in pygame.event.get():
@@ -256,23 +264,70 @@ class Game:
                 # Update the display 
                 pygame.display.update()
 
+
+    def game_over_screen(self):
+        self.screen.fill((0, 0, 0))  # Fill screen with black color
+        game_over_text = self.font.render("Game Over", True, (255, 255, 255))
+        score_text = self.font.render("Score: " + str(self.player.score), True, (255, 255, 255))
+        restart_text = self.font.render("Press R to restart", True, (255, 255, 255))
+        menu_text = self.font.render("Press M for menu", True, (255, 255, 255))  
+        # Position text on the screen
+        game_over_rect = game_over_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 - 50))
+        score_rect = score_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
+        restart_rect = restart_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 + 50))
+        menu_rect = menu_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 + 100))  # Adjust position as needed
+        # Blit text onto the screen
+        self.screen.blit(game_over_text, game_over_rect)
+        self.screen.blit(score_text, score_rect)
+        self.screen.blit(restart_text, restart_rect)
+        self.screen.blit(menu_text, menu_rect) 
+        pygame.display.flip()
+
+
         
     def main(self):
-        # Start the background music
+    # Start the background music
         MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
 
-        #game loop
-        self.new()
-        while self.playing:
-            self.events()
-            self.update()
-            self.draw()
-            self.player_bullets.update()
-                
-        # Stop music before quitting
+        while self.running:
+        # Start a new game
+            self.new()
+
+        # Game loop
+            while self.playing:
+                self.events()
+                self.update()
+                self.draw()
+                self.player_bullets.update()
+
+            # Check for game over condition
+                if self.player.lives <= 0:
+                    self.playing = False  # Exit the game loop
+
+        # Display game over screen
+            self.game_over_screen()
+
+        # Wait for player input to restart or quit
+            waiting = True
+            while waiting:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        waiting = False
+                        self.running = False
+                        break
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:  # Restart the game
+                            waiting = False
+                        elif event.key == pygame.K_q:  # Quit the game
+                            waiting = False
+                            self.running = False
+
+    # Stop music before quitting
         self.updateLeaderboard()
         MUSIC_CHANNEL.stop()
-        self.running = False
+        pygame.quit()
+        sys.exit()
+
         
         return 0
 
