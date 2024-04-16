@@ -3,6 +3,7 @@ from AsteroidsRound import *
 from shipSelectScreen import *
 from button import *
 from leaderboard import *
+from CoOp import *
 
 class Menu:
     def __init__(self):
@@ -26,7 +27,8 @@ class Menu:
         self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), WHITE, "SHIP", 'Images/ships/ship-a/ship-a-damaged.png')
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         self.statButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 300), (100, 100), WHITE, "STATS")
-        
+        self.coOpButton = Button((WIN_WIDTH/2-50, WIN_HEIGHT/2 -300), (100, 100), WHITE, "CO-OP")
+
     
     
     def draw(self):
@@ -41,6 +43,8 @@ class Menu:
         self.shipSelect.draw(self.screen, BLACK)
         self.exitButton.draw(self.screen, BLACK)
         self.statButton.draw(self.screen,BLACK)
+        self.coOpButton.draw(self.screen,BLACK)
+
     
         pygame.display.update()
 
@@ -87,6 +91,12 @@ class Menu:
                     leaderboard = LeaderBoard()
                     while leaderboard.running:
                         leaderboard.view()
+                        
+                if self.coOpButton.is_clicked(event):
+                        c = CoOp(selected_ship) #init Game class
+                        c.new() #create a new game everytime we run
+                        while c.running:
+                            c.main()
 
                 if self.exitButton.is_clicked(event):
                     # exit
