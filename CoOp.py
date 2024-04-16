@@ -23,6 +23,7 @@ class CoOp:
 
         self.selected_ship = selected_ship
 
+
         self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
         self.background = pygame.transform.scale(self.background, (self.Width, self.Height))
         stars_image = pygame.image.load('Images/backgrounds/space-stars.png')
@@ -73,8 +74,8 @@ class CoOp:
         elif self.selected_ship == 3:
             ship_image_list = SHIP_D
 
-        self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2, (self.Height/TILESIZE)/2, 1, ship_image_list)
-        self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2, (self.Height/TILESIZE)/2, 2, ship_image_list)
+        self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2-10, (self.Height/TILESIZE)/2, 1, SHIP_A)
+        self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2+5, (self.Height/TILESIZE)/2, 2, SHIP_B)
 
     #create background screen for game
     def draw(self):
