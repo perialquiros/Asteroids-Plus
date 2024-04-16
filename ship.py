@@ -4,6 +4,7 @@ import pygame
 import random
 from config import *
 import sys
+from asteroid import *
 
 
 class Ships(pygame.sprite.Sprite):
@@ -121,7 +122,7 @@ class Ships(pygame.sprite.Sprite):
         self.ship_sp_bullets.add(sp_bullet)
         self.ship_bullets.add(sp_bullet)
 
-    def check_collision(self, group):
+    def check_collision(self, group, asteroids, player):
         for bullet in group:
             if pygame.sprite.collide_rect(self, bullet):
                 # Remove the ship and the bullet from the game
@@ -132,8 +133,19 @@ class Ships(pygame.sprite.Sprite):
                 for bullets in self.ship_sp_bullets:
                     bullets.kill()
                 self.ship_exist = False
-                return True
-        return False
+
+        for asteroid in asteroids:
+            if pygame.sprite.collide_rect(self, asteroid):
+                # Remove the ship and the bullet from the game
+                self.kill()
+                asteroid.kill()
+                for bullets in self.ship_reg_bullets:
+                    bullets.kill()
+                for bullets in self.ship_sp_bullets:
+                    bullets.kill()
+                self.ship_exist = False
+
+        
 
 class ship_sp_bullet(pygame.sprite.Sprite):
     

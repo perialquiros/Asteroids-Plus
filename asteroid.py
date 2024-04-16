@@ -118,11 +118,15 @@ class Asteroid(pygame.sprite.Sprite):
             return SM_ASTEROID_SIZE
         else:
             return 0
+        
     # method to check collision between the asteroid and another sprite - used in menu.py
-    def check_collision(self, group):
+    def check_collision(self, group, ship_bullets):
         for bullet in group: 
             if pygame.sprite.collide_circle(self, bullet):
                 self.kill()
                 bullet.kill()
-                return True
-        return False
+        for bullet in ship_bullets: 
+            if pygame.sprite.collide_circle(self, bullet):
+                self.kill()
+                bullet.kill()
+                
