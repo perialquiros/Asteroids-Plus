@@ -15,8 +15,8 @@ class CoOp:
     asteroid_timer = 0
     asteroid_spawn_delay = 1
     
-    Width = WIN_WIDTH * 2
-    Height = WIN_HEIGHT * 2
+    Width = WIN_WIDTH 
+    Height = WIN_HEIGHT
 
     def __init__(self,selected_ship):
         self.screen = pygame.display.set_mode((self.Width, self.Height))
@@ -43,6 +43,11 @@ class CoOp:
         self.spawn_timer_powerup = 0
         self.game_timer = 0
 
+
+    def spawn_asteroid(self, size, x = None, y = None):
+        asteroid = Asteroid(self, size, x, y)
+        self.all_sprites.add(asteroid)
+        self.asteroids.add(asteroid)
         
     def events(self):
         for event in pygame.event.get():
@@ -68,8 +73,8 @@ class CoOp:
         elif self.selected_ship == 3:
             ship_image_list = SHIP_D
 
-        self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2-100, (self.Height/TILESIZE)/2-100, 1, ship_image_list)
-        self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2-100, (self.Height/TILESIZE)/2-100, 2, ship_image_list)
+        self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2, (self.Height/TILESIZE)/2, 1, ship_image_list)
+        self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2, (self.Height/TILESIZE)/2, 2, ship_image_list)
 
     #create background screen for game
     def draw(self):
@@ -96,6 +101,18 @@ class CoOp:
         if self.bg_stars_x2 + WIN_WIDTH < 0:
             self.bg_stars_x2 = WIN_WIDTH
     
+    def asteroid_alg(self):
+        size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
+
+        if self.game_timer >= 30:
+            self.asteroid_spawn_delay = 0.9
+        if self.game_timer >= 60:
+            self.asteroid_spawn_delay = 0.8
+
+        if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
+            self.spawn_asteroid(size)
+            self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
+            
     def update(self):
         #game loop updates
         self.all_sprites.update()
@@ -105,7 +122,7 @@ class CoOp:
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
       
-        #self.asteroid_alg()
+        self.asteroid_alg()
                
         # check if player obtained the powerup
         for powerup in self.powerups:
