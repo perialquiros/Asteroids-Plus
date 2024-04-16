@@ -77,8 +77,6 @@ class Game:
                 self.playing = False
                 self.running = False
 
-  
-        
     def update(self):
         #game loop updates
         self.all_sprites.update()
@@ -91,7 +89,7 @@ class Game:
         self.asteroid_alg()
         # check all collision for asteroid
         for asteroid in self.asteroids:
-           if asteroid.check_collision(self.player_bullets):
+           if asteroid.check_collision(self.player_bullets, self.ship_bullets):
             if asteroid.width != SM_ASTEROID_SIZE:
                 self.player.score += 10
                 new_size = asteroid.getSizeBelow()
@@ -103,7 +101,7 @@ class Game:
         
         # check all collision for saucer
         for ship in self.ships:
-            if ship.check_collision(self.player_bullets):
+            if ship.check_collision(self.player_bullets, self.asteroids, self.player):
                 self.player.score += 30
 
         # move the ship
