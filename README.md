@@ -12,17 +12,9 @@ Before installing Asteroids Plus, ensure you have the following installed on you
 - Pygame, which can be installed in your terminal using pip:
   ```sh
   pip install pygame
+- refer the rest of the instructions to How to build section at the end of this file
 ### Installation Instructions
 #### Window Users
-1. Download the latest binary  from the Release section
-2. Extract the zip file to your preferred location
-3. Open command prompt and navigate to the extraced 'Asteroids+' folder:
-   ```sh
-   cd path\to\Asteroids+
-4. Run the game with Python:
-    ```sh
-    python menu.py
-#### macOS Users
 1. Download the latest binary from the Release section
 2. Extract the zip file to your preferred location
 3. Open command prompt and navigate to the extraced 'Asteroids+' folder:
@@ -31,7 +23,8 @@ Before installing Asteroids Plus, ensure you have the following installed on you
 4. Run the game with Python:
     ```sh
     python menu.py
-5. If you encounter a message saying macOS cannot verify the developer of "Menu", navigate to System Preferences > Security & Privacy and allow the app to run
+#### macOS Users
+1. The binary will not work due to security reasons, thereby please navigate to How to Install and Run section to execute the program through terminal or IDE
 
 #### ENJOY PLAYING SPACE RIDER!
 
