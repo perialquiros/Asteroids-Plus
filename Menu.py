@@ -30,6 +30,7 @@ class Menu:
         self.instructionsButton = Button((WIN_WIDTH - 120, WIN_HEIGHT - 70), (100, 50), WHITE, "Help")
         
     
+
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
