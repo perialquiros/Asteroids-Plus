@@ -38,6 +38,8 @@ class LeaderBoard():
     def save_highscore(self,score):
         """Saves a new high score to the file"""
         highscores = self.load_highscores()
+        if(score == 0):
+            return
         highscores.append(score)
         highscores.sort(reverse=True) # Sort in descending order (highest first)
         highscores = highscores[:10] # Keep only the top 10 scores
@@ -48,9 +50,12 @@ class LeaderBoard():
 
     def check_new_highscore(self,score):
         """Checks if the current score is a new high score"""
+        if(score == 0):
+            return False
         highscores = self.load_highscores()
-        return score > highscores[-1] if highscores else True
-    
+        if score == highscores[0]:
+            return True
+        return False    
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
