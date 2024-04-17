@@ -10,9 +10,11 @@ import pygame.font
 class Menu:
     def __init__(self):
         pygame.init()
-
-        self.title_font = pygame.font.Font(None, 65)
-        self.title_text = self.title_font.render("ASTEROIDS+", True, WHITE)
+        self.title = "Asteroids   Plus"
+        self.title_font = pygame.font.Font('Galaxus-z8Mow.ttf', 75)
+        self.title_text = self.title_font.render(self.title, True, WHITE)
+        self.title_y = 50
+        self.title_y_velocity = 1
         # load screen and images for background
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
@@ -39,11 +41,19 @@ class Menu:
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+        
+        self.title_y += self.title_y_velocity
+        if self.title_y >= WIN_HEIGHT - 740:
+            self.title_y = WIN_HEIGHT - 740  # Limit the title's position to the bottom of the screen
+            self.title_y_velocity = -0.20  # Reverse direction when reaching bottom
+        elif self.title_y <= 50:
+            self.title_y = 50  # Limit the title's position to the top of the screen
+            self.title_y_velocity = 0.20 
 
-        # Draw title text
-        title_rect = self.title_text.get_rect(center=(WIN_WIDTH/2, 50)) 
+        # Add the following lines
+        title_rect = self.title_text.get_rect(center=(WIN_WIDTH/2, self.title_y)) 
         self.screen.blit(self.title_text, title_rect)
-       
+
         self.clock.tick(FPS) #update the screen based on FPS
         pygame.mouse.set_visible(True)
         
