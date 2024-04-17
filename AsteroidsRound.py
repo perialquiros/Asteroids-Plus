@@ -270,7 +270,7 @@ class Game:
         game_over_text = self.font.render("Game Over", True, (255, 255, 255))
         score_text = self.font.render("Score: " + str(self.player.score), True, (255, 255, 255))
         restart_text = self.font.render("Press R to restart", True, (255, 255, 255))
-        menu_text = self.font.render("Press M for menu", True, (255, 255, 255))  
+        menu_text = self.font.render("Press Q for menu", True, (255, 255, 255))  
         # Position text on the screen
         game_over_rect = game_over_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 - 50))
         score_rect = score_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
@@ -302,6 +302,7 @@ class Game:
 
             # Check for game over condition
                 if self.player.lives <= 0:
+                    self.game_timer = 0   # Reset game time to 0:00
                     self.playing = False  # Exit the game loop
 
         # Display game over screen
@@ -314,13 +315,15 @@ class Game:
                     if event.type == pygame.QUIT:
                         waiting = False
                         self.running = False
-                        break
+                        return 0
+                        
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_r:  # Restart the game
                             waiting = False
                         elif event.key == pygame.K_q:  # Quit the game
                             waiting = False
                             self.running = False
+                            return 0
 
     # Stop music before quitting
         self.updateLeaderboard()
