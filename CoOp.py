@@ -39,6 +39,9 @@ class CoOp:
         self.asteroids = pygame.sprite.Group()
 
         self.powerups = pygame.sprite.Group()
+        
+        self.player_bullets = pygame.sprite.Group()
+        self.player_special_bullets = pygame.sprite.Group()
 
         # update all variables
         self.spawn_timer_powerup = 0
@@ -88,6 +91,13 @@ class CoOp:
         for asteroid in self.asteroids:
             self.screen.blit(asteroid.image, asteroid.rect)
         self.clock.tick(FPS) #update the screen based on FPS
+        
+        player_1_lives_text = self.font.render('Player 1 Lives: ' + str(self.player1.lives), False, WHITE)
+        player_2_lives_text = self.font.render('Player 2 Lives: ' + str(self.player2.lives), False, WHITE)
+        
+        # Draw the lives text
+        self.screen.blit(player_1_lives_text, (10, 10))
+        self.screen.blit(player_2_lives_text, (10,40))
 
         pygame.display.update()
 
@@ -130,6 +140,9 @@ class CoOp:
         # check if player obtained the powerup
         for powerup in self.powerups:
             powerup.update()       
+            
+        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
+        pygame.sprite.groupcollide(self.player_special_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
         #

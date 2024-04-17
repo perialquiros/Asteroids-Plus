@@ -2,10 +2,12 @@ import pygame
 from config import *
 import math
 import random
+from player import *
 
-class PlayerCoOp(pygame.sprite.Sprite):
+class PlayerCoOp(pygame.sprite.Sprite,):
     
     def __init__(self, game, x, y, playerNum, image_list):
+        
        # self.game = game
         self.game = game
 
@@ -36,6 +38,7 @@ class PlayerCoOp(pygame.sprite.Sprite):
         # set player's rect x, y positions
         self.rect.x = self.x
         self.rect.y = self.y
+        self.player_bullets = self.game.player_bullets
 
         #acceleration
         self.velocity = pygame.math.Vector2(0, 0)  # Initialize velocity vector
@@ -47,7 +50,25 @@ class PlayerCoOp(pygame.sprite.Sprite):
         self.y_change = 0
         self.angle = 0
         
-        self.lives = 1        
+        self.lives = 3     
+        self.last_shot_time = 0  # Initialize the last shot time
+        
+    def shoot_regular_bullet(self):
+        bullet = RegularBullet(self, self.rect.centerx, self.rect.centery, self.angle)
+        rad_angle = math.radians(self.angle)  # Convert angle to radians
+        bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
+        bullet.vel_y = math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
+        self.game.all_sprites.add(bullet)
+        self.player_bullets.add(bullet)
+
+    def shoot_special_bullet(self):
+        bullet = SpecialBullet(self.rect.centerx, self.rect.centery, self.angle)
+        rad_angle = math.radians(self.angle)  # Convert angle to radians
+        bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
+        bullet.vel_y = math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
+        self.game.all_sprites.add(bullet)
+        self.player_bullets.add(bullet)
+  
     #update player sprite
     def update(self):
 
@@ -60,6 +81,7 @@ class PlayerCoOp(pygame.sprite.Sprite):
 
         #check collisions
         self.collide(self.game.asteroids)
+        
 
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
@@ -84,9 +106,25 @@ class PlayerCoOp(pygame.sprite.Sprite):
             self.image = self.og_image  # Outside invulnerability period, use original image
 
         self.rotate()
-       # self.handle_input()
+        self.handle_input()
            
+    def handle_input(self):
+        keys = pygame.key.get_pressed()
+        current_time = pygame.time.get_ticks()
 
+        # Calculate the time elapsed since the last shot
+        time_since_last_shot = current_time - self.last_shot_time
+        if(self.playerNum==1):
+            if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 500 milliseconds (0.5 second) have passed since the last shot
+                self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
+                PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
+                self.last_shot_time = current_time  # Update the last shot time
+        if(self.playerNum==2):
+            if keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:
+                self.shoot_special_bullet()
+                PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
+                self.last_shot_time = current_time  # Update the last shot time
+            
     def wrap_around_screen(self):
         if self.rect.right < 0:
             self.rect.left = WIN_WIDTH
