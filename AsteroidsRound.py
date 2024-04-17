@@ -9,10 +9,9 @@ import time
 from leaderboard import *
 import time
 
-
 class Game:
     asteroid_timer = 0
-    asteroid_spawn_delay = 1
+    asteroid_spawn_delay = 0.7
 
     def __init__(self, selected_ship=0):
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
@@ -54,7 +53,14 @@ class Game:
         
         #new game
         self.playing = True
-        
+
+        #reset asteroid timer and spawn delay
+        self.asteroid_timer = 0
+        self.asteroid_spawn_delay = 1
+
+        # Clear existing asteroid sprites
+        self.asteroids.empty()
+
         #take all sprites and bunch them together so we can update all at once if needed
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.enemies = pygame.sprite.LayeredUpdates()
@@ -69,6 +75,8 @@ class Game:
             ship_image_list = SHIP_D
 
         self.player = Player(self, (WIN_WIDTH/TILESIZE)/2, (WIN_HEIGHT/TILESIZE)/2, ship_image_list)
+
+
     
     def events(self):
         for event in pygame.event.get():
@@ -77,39 +85,33 @@ class Game:
                 self.playing = False
                 self.running = False
 
-    def updateScore(self):
-        #check collisions and update score
-        if(pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)):
-            #if(self.asteroids.asteroid.width == BIG_ASTEROID_SIZE):
-            #        self.player.score += 20
-            #if(self.asteroids.asteroid.width == MED_ASTEROID_SIZE):
-            #    self.player.score+=40
-            #else:
-            self.player.score +=20
-        
     def update(self):
         #game loop updates
         self.all_sprites.update()
         self.update_background()
         self.spawn_timer_ship += 1
         self.game_timer += 1
-        self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
-        
-        self.updateScore()
-        #pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
-        
-        #pygame.sprite.groupcollide(self.player_bullets, self.ships, True, True, pygame.sprite.collide_rect)
+        self.asteroid_timer += 0.5
+ 
         self.asteroid_alg()
+        # check all collision for asteroid
         for asteroid in self.asteroids:
-           if asteroid.check_collision(self.player_bullets):
+           if asteroid.check_collision(self.player_bullets, self.ship_bullets):
             if asteroid.width != SM_ASTEROID_SIZE:
+                self.player.score += 10
                 new_size = asteroid.getSizeBelow()
                 new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
                 self.spawn_asteroid(new_size, new_x, new_y)
                 self.spawn_asteroid(new_size, new_x, new_y)
-
+            else:
+                self.player.score += 20
         
+        # check all collision for saucer
+        for ship in self.ships:
+            if ship.check_collision(self.player_bullets, self.asteroids, self.player):
+                self.player.score += 30
+
         # move the ship
         for ship in self.ships:
             ship.spawn_timer_sp_bullet += 1
@@ -117,7 +119,6 @@ class Game:
             ship.move()
             for bullet in ship.ship_sp_bullets:
                 bullet.update_dir(self.player)
-            ship.check_collision(self.player_bullets)
 
             # start shooting for regular bullet
             if ship.spawn_timer_reg_bullet >= self.spawn_delay_reg_bullet * FPS:
@@ -160,9 +161,15 @@ class Game:
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
         self.all_sprites.draw(self.screen) 
-        for asteroid in self.asteroids:
-            self.screen.blit(asteroid.image, asteroid.rect)
+        
         self.clock.tick(FPS) #update the screen based on FPS
+        minutes = self.game_timer // (60 * FPS)
+        seconds = (self.game_timer // FPS) % 60
+
+        # draw clock
+        time_text = self.font.render(f"Time: {minutes:02}-{seconds:02}", True, WHITE)
+        time_rect = time_text.get_rect(topright=(WIN_WIDTH - 10, 10))
+        self.screen.blit(time_text, time_rect)
 
         lives_text = self.font.render('Lives: ' + str(self.player.lives), False, WHITE)
         score_text = self.font.render('Score: ' + str(self.player.score), False, WHITE)
@@ -198,15 +205,41 @@ class Game:
         
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
-
-        if self.game_timer >= 30:
-            self.asteroid_spawn_delay = 0.9
-        if self.game_timer >= 60:
-            self.asteroid_spawn_delay = 0.8
+        current_minute = self.game_timer // (60 * FPS) 
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
-            self.spawn_asteroid(size)
+            if current_minute == 1:
+                self.asteroid_spawn_delay = 0.6
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 2:
+                self.asteroid_spawn_delay = 0.4
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 3:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 4:
+                self.asteroid_spawn_delay = 0.3
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 6:
+                self.asteroid_spawn_delay = 0.2
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            else:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
+    
 
     def updateLeaderboard(self):
 
@@ -231,23 +264,70 @@ class Game:
                 # Update the display 
                 pygame.display.update()
 
+
+    def game_over_screen(self):
+        self.screen.fill((0, 0, 0))  # Fill screen with black color
+        game_over_text = self.font.render("Game Over", True, (255, 255, 255))
+        score_text = self.font.render("Score: " + str(self.player.score), True, (255, 255, 255))
+        restart_text = self.font.render("Press R to restart", True, (255, 255, 255))
+        menu_text = self.font.render("Press M for menu", True, (255, 255, 255))  
+        # Position text on the screen
+        game_over_rect = game_over_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 - 50))
+        score_rect = score_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
+        restart_rect = restart_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 + 50))
+        menu_rect = menu_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 + 100))  # Adjust position as needed
+        # Blit text onto the screen
+        self.screen.blit(game_over_text, game_over_rect)
+        self.screen.blit(score_text, score_rect)
+        self.screen.blit(restart_text, restart_rect)
+        self.screen.blit(menu_text, menu_rect) 
+        pygame.display.flip()
+
+
         
     def main(self):
-        # Start the background music
+    # Start the background music
         MUSIC_CHANNEL.play(BACKGROUND_MUSIC, loops=-1)
 
-        #game loop
-        self.new()
-        while self.playing:
-            self.events()
-            self.update()
-            self.draw()
-            self.player_bullets.update()
-                
-        # Stop music before quitting
+        while self.running:
+        # Start a new game
+            self.new()
+
+        # Game loop
+            while self.playing:
+                self.events()
+                self.update()
+                self.draw()
+                self.player_bullets.update()
+
+            # Check for game over condition
+                if self.player.lives <= 0:
+                    self.playing = False  # Exit the game loop
+
+        # Display game over screen
+            self.game_over_screen()
+
+        # Wait for player input to restart or quit
+            waiting = True
+            while waiting:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        waiting = False
+                        self.running = False
+                        break
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_r:  # Restart the game
+                            waiting = False
+                        elif event.key == pygame.K_q:  # Quit the game
+                            waiting = False
+                            self.running = False
+
+    # Stop music before quitting
         self.updateLeaderboard()
         MUSIC_CHANNEL.stop()
-        self.running = False
+        pygame.quit()
+        sys.exit()
+
         
         return 0
 

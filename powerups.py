@@ -14,7 +14,7 @@ class Powerups(pygame.sprite.Sprite):
         self.collision = False
 
         #load all powerup images and random chooses one
-        image_paths = ['Images/powerups/shield.jpeg', 'Images/powerups/plus.jpeg', 'Images/powerups/bomb.jpeg']
+        image_paths = ['Images/powerups/shield.png', 'Images/powerups/plus.png', 'Images/powerups/bomb.png']
         self.images = [pygame.image.load(path) for path in image_paths]
         self.image_size = (40, 40)  # Change the size as needed
         self.images = [pygame.transform.scale(image, self.image_size) for image in self.images]
@@ -27,7 +27,8 @@ class Powerups(pygame.sprite.Sprite):
         self.rect.y = random.randint(0, WIN_HEIGHT)
 
     def shield_funct(self):
-        self.player.damage_loop += 5000 # allows 5 seconds of invulnerability
+        current_time = pygame.time.get_ticks()
+        self.player.damage_loop = current_time + 5000 # allows 5 seconds of invulnerability
         self.player.update()
     
     def plus_funct(self):
