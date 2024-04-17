@@ -14,7 +14,7 @@ class Menu:
         self.title_font = pygame.font.Font('Galaxus-z8Mow.ttf', 100)
         self.title_text = self.title_font.render(self.title, True, WHITE)
         self.title_y = 150
-        self.title_y_velocity = 0.17
+        self.title_y_velocity = 0.20
         # load screen and images for background
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
@@ -43,12 +43,12 @@ class Menu:
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
         
         self.title_y += self.title_y_velocity
-        if self.title_y >= WIN_HEIGHT - 620:
-            self.title_y = WIN_HEIGHT - 620  # Limit the title's position to the bottom of the screen
-            self.title_y_velocity = -0.17  # Reverse direction when reaching bottom
+        if self.title_y >= WIN_HEIGHT - 635:
+            self.title_y = WIN_HEIGHT - 635  # Limit the title's position to the bottom of the screen
+            self.title_y_velocity = -0.20  # Reverse direction when reaching bottom
         elif self.title_y <= 150:
             self.title_y = 150  # Limit the title's position to the top of the screen
-            self.title_y_velocity = 0.17 
+            self.title_y_velocity = 0.20 
 
         # Add the following lines
         title_rect = self.title_text.get_rect(center=(WIN_WIDTH/2, self.title_y)) 
