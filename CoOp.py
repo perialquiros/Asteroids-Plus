@@ -44,7 +44,7 @@ class CoOp:
         self.spawn_timer_powerup = 0
         self.game_timer = 0
         
-        self.deadPlayer = 0 # 1 means player 1 died, 2 means player 2 died
+        self.dead_player = 0 # 1 means player 1 died, 2 means player 2 died
 
 
     def spawn_asteroid(self, size, x = None, y = None):
