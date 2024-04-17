@@ -97,7 +97,7 @@ class Game:
         self.asteroid_alg()
         # check all collision for asteroid
         for asteroid in self.asteroids:
-           if asteroid.check_collision(self.player_bullets, self.ship_bullets):
+           if asteroid.check_collision(self.player_bullets):
             if asteroid.width != SM_ASTEROID_SIZE:
                 self.player.score += 10
                 new_size = asteroid.getSizeBelow()

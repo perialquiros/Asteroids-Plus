@@ -133,6 +133,7 @@ class Ships(pygame.sprite.Sprite):
                 for bullets in self.ship_sp_bullets:
                     bullets.kill()
                 self.ship_exist = False
+                return True
 
         for asteroid in asteroids:
             if pygame.sprite.collide_rect(self, asteroid):
@@ -145,6 +146,8 @@ class Ships(pygame.sprite.Sprite):
                 for bullets in self.ship_sp_bullets:
                     bullets.kill()
                 self.ship_exist = False
+                return True
+        return False
 
         
 
