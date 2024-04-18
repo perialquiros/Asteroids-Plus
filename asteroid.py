@@ -123,39 +123,14 @@ class Asteroid(pygame.sprite.Sprite):
     def check_collision(self, group, ship_bullets):
         for bullet in group: 
             if pygame.sprite.collide_circle(self, bullet):
-                self.play_explosion()
                 self.kill()
                 bullet.kill()
                 ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
                 return True
         for bullet in ship_bullets: 
             if pygame.sprite.collide_circle(self, bullet):
-                self.play_explosion()
                 self.kill()
                 bullet.kill()
                 ASTEROID_CHANNEL.play(ASTEROID_MUSIC)
                 return True
         return False
-
-    def play_explosion(self):
-        explosion = Explosion(self.rect.center)
-   
-
-class Explosion(pygame.sprite.Sprite):
-    def __init__(self, position):
-        super().__init__()
-        self.images = EXPLOSION
-        self.index = 0
-        self.image = self.images[self.index]
-        self.rect = self.image.get_rect(center=position)
-        self.timer = pygame.time.get_ticks()
-
-    def update(self):
-        if pygame.time.get_ticks() - self.timer > 100:
-            self.timer = pygame.time.get_ticks()
-            self.index += 1
-            if self.index >= len(self.images):
-                self.kill()
-            else:
-                self.image = self.images[self.index]
-                self.rect = self.image.get_rect(center=self.rect.center)
