@@ -30,21 +30,21 @@ class Game:
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
         self.running = True
 
-        #init sprite sheets
-        self.ships = pygame.sprite.Group()
-        self.asteroids = pygame.sprite.Group()
-        self.player_bullets = pygame.sprite.Group()
+        
 
         # all variables for the ship class
         self.game_timer = 0
         self.spawn_timer_ship = 0
-        self.spawn_delay_ship = 30
-        self.spawn_delay_reg_bullet = 10
+        self.spawn_delay_ship = 2
+        self.spawn_delay_reg_bullet = 2
         self.spawn_delay_sp_bullet = 20
 
+        #init sprite group
+        self.ships = pygame.sprite.Group()
+        self.asteroids = pygame.sprite.Group()
+        self.player_bullets = pygame.sprite.Group()
         self.powerups = pygame.sprite.Group()
         self.ship_bullets = pygame.sprite.Group()
-
         self.player_bullets = pygame.sprite.Group()
 
         # update all variables
@@ -112,6 +112,7 @@ class Game:
         # check all collision for saucer
         for ship in self.ships:
             if ship.check_collision(self.player_bullets, self.asteroids, self.player):
+                self.play_explosion(ship.rect.center, 60)
                 self.player.score += 30
 
         # move the ship

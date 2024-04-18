@@ -1,14 +1,15 @@
 import pygame
+import sys
+import time
+
 from player import *
 from ship import *
 from config import *
 from asteroid import *
-import sys
 from powerups import *
-import time
 from leaderboard import *
-import time
 from PlayerCoOp import *
+from explosion import *
 
 
 class CoOp:
@@ -35,11 +36,9 @@ class CoOp:
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
         self.running = True
 
-        #init sprite sheets
+        #init sprite groups
         self.asteroids = pygame.sprite.Group()
-
         self.powerups = pygame.sprite.Group()
-        
         self.player_bullets = pygame.sprite.Group()
         self.player_special_bullets = pygame.sprite.Group()
 
@@ -114,17 +113,48 @@ class CoOp:
         if self.bg_stars_x2 + WIN_WIDTH < 0:
             self.bg_stars_x2 = WIN_WIDTH
     
+    # asteroid algorithm, increase difficulty per minute
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
-
-        if self.game_timer >= 30:
-            self.asteroid_spawn_delay = 0.9
-        if self.game_timer >= 60:
-            self.asteroid_spawn_delay = 0.8
+        current_minute = self.game_timer // (60 * FPS) 
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
-            self.spawn_asteroid(size)
+            if current_minute == 1:
+                self.asteroid_spawn_delay = 0.6
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 2:
+                self.asteroid_spawn_delay = 0.4
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 3:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 4:
+                self.asteroid_spawn_delay = 0.3
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 6:
+                self.asteroid_spawn_delay = 0.2
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            else:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
+
+    # animate explosion
+    def play_explosion(self, position, size):
+        explosion = Explosion(position, size)
+        self.all_sprites.add(explosion)
             
     def update(self):
         #game loop updates
@@ -134,15 +164,26 @@ class CoOp:
         self.game_timer += 1
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
-      
+
+        # run asteroid alg
         self.asteroid_alg()
+
+        # check all collision for asteroid
+        for asteroid in self.asteroids:
+            if asteroid.check_collision(self.player_bullets):
+                self.play_explosion(asteroid.rect.center, asteroid.size)
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                else:
+                    pass
                
         # check if player obtained the powerup
         for powerup in self.powerups:
             powerup.update()       
             
-        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
-        pygame.sprite.groupcollide(self.player_special_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
         #
