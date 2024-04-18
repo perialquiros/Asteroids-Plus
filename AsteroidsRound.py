@@ -1,13 +1,14 @@
 import pygame
+import sys
+import time
+
 from player import *
 from ship import *
 from config import *
 from asteroid import *
-import sys
 from powerups import *
-import time
 from leaderboard import *
-import time
+from explosion import *
 
 class Game:
     asteroid_timer = 0
@@ -98,6 +99,7 @@ class Game:
         # check all collision for asteroid
         for asteroid in self.asteroids:
            if asteroid.check_collision(self.player_bullets, self.ship_bullets):
+            self.play_explosion(asteroid.rect.center, asteroid.size)
             if asteroid.width != SM_ASTEROID_SIZE:
                 self.player.score += 10
                 new_size = asteroid.getSizeBelow()
@@ -283,6 +285,9 @@ class Game:
         self.screen.blit(menu_text, menu_rect) 
         pygame.display.flip()
 
+    def play_explosion(self, position, size):
+        explosion = Explosion(position, size)
+        self.all_sprites.add(explosion)
 
         
     def main(self):
@@ -325,12 +330,12 @@ class Game:
                             self.running = False
                             return 0
 
+
     # Stop music before quitting
         self.updateLeaderboard()
         MUSIC_CHANNEL.stop()
         pygame.quit()
         sys.exit()
 
-        
         return 0
 
