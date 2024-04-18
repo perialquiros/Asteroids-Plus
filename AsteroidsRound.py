@@ -35,9 +35,9 @@ class Game:
         # all variables for the ship class
         self.game_timer = 0
         self.spawn_timer_ship = 0
-        self.spawn_delay_ship = 2
+        self.spawn_delay_ship = 10
         self.spawn_delay_reg_bullet = 2
-        self.spawn_delay_sp_bullet = 20
+        self.spawn_delay_sp_bullet = 13
 
         #init sprite group
         self.ships = pygame.sprite.Group()
