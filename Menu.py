@@ -92,6 +92,7 @@ class Menu:
                         g.new() #create a new game everytime we run
                         while g.running:
                             g.main()
+
                 if self.shipSelect.is_clicked(event):
                     select = ShipSelection()
                     selected_ship = select.main()
