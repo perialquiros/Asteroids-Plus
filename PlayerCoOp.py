@@ -115,12 +115,12 @@ class PlayerCoOp(pygame.sprite.Sprite,):
         # Calculate the time elapsed since the last shot
         time_since_last_shot = current_time - self.last_shot_time
         if(self.playerNum==1):
-            if keys[pygame.K_SPACE] and time_since_last_shot >= 500:  # Shoot only if 500 milliseconds (0.5 second) have passed since the last shot
+            if keys[pygame.K_SPACE] and time_since_last_shot >= 5000:  
                 self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
                 PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
                 self.last_shot_time = current_time  # Update the last shot time
         if(self.playerNum==2):
-            if keys[pygame.K_LSHIFT] and time_since_last_shot >= 500:
+            if keys[pygame.K_LSHIFT] and time_since_last_shot >= 5000:
                 self.shoot_special_bullet()
                 PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
                 self.last_shot_time = current_time  # Update the last shot time
