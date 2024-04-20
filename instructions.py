@@ -33,12 +33,12 @@ class InstructionsMenu:
         self.controlsButton = Button((100, button_y_start + 60), (200, 50), WHITE, 'Controls')
         self.mechanicsButton = Button((100, button_y_start + 120), (300, 50), WHITE, 'Gameplay Mechanics')
         self.powerupsButton = Button((100, button_y_start + 180), (200, 50), WHITE, 'Powerups')
-        self.scoringButton = Button((100, button_y_start + 240), (200, 50), WHITE, 'Scorings')
-        self.strategyButton = Button((100, button_y_start + 300), (200, 50), WHITE, 'Strategies')
+        self.scoringButton = Button((100, button_y_start + 300), (200, 50), WHITE, 'Scorings')
+        self.strategyButton = Button((100, button_y_start + 240), (200, 50), WHITE, 'Strategies')
         self.exitButton = Button((100, button_y_start + 360), (200, 50), WHITE, 'Return')
         self.p1button = Button((100, button_y_start + 60), (250, 50), WHITE, 'P1 Mechanics')
         self.p2button = Button((100, button_y_start + 120), (250, 50), WHITE, 'P2 Mechanics')
-        self.backbutton = Button((100, button_y_start + 360), (200, 50), WHITE, 'Go back')
+        self.backbutton = Button((100, button_y_start + 420), (200, 50), WHITE, 'Go back')
         self.singlebutton = Button((100, button_y_start + 60), (250, 50), WHITE, 'Single Player')
         self.coopbutton = Button((100, button_y_start + 120), (250, 50), WHITE, 'Multi Player')
 
@@ -56,16 +56,17 @@ class InstructionsMenu:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if self.exitButton.is_clicked(event):
                         self.running = False
-                    elif self.singlebutton.is_clicked(event):
-                        self.handle_button_click_single(event)
-                        self.self_button_visible = True
-                    elif self.coopbutton.is_clicked(event):
-                        self.handle_button_click_coop(event)
-                        self.coop_button_visible = True
-                    self.initial_buttons_visible = False
+                    if self.initial_buttons_visible:
+                        if self.singlebutton.is_clicked(event):
+                            self.self_button_visible = True
+                            self.initial_buttons_visible = False
+                        elif self.coopbutton.is_clicked(event):
+                            self.coop_button_visible = True
+                            self.initial_buttons_visible = False
+                            
 
             self.update_background()
-            self.screen.fill((0, 0, 0))  # fill with base color
+            self.screen.fill((0, 0, 0))  # Clear the screen or fill with base color
             self.screen.blit(self.bg_stars, (self.bg_stars_x1, 0))
             self.screen.blit(self.bg_stars, (self.bg_stars_x2, 0))
 
@@ -74,34 +75,24 @@ class InstructionsMenu:
             if self.current_message:  # Check if there is a message to display
                 self.display_message(self.current_message)
 
-            # Draw buttons
+            # Control visibility of each button group
             if self.initial_buttons_visible:
                 self.singlebutton.draw(self.screen, BLACK)
                 self.coopbutton.draw(self.screen, BLACK)
                 self.exitButton.draw(self.screen, BLACK)
-
             elif self.self_button_visible:
-                self.objButton.draw(self.screen, BLACK)
-                self.controlsButton.draw(self.screen, BLACK)
-                self.mechanicsButton.draw(self.screen, BLACK)
-                self.powerupsButton.draw(self.screen, BLACK)
+                self.draw_game_buttons()
                 self.scoringButton.draw(self.screen, BLACK)
-                self.strategyButton.draw(self.screen, BLACK)
-                self.backbutton.draw(self.screen, BLACK)
-
+                self.handle_button_click_single(event)
             elif self.coop_button_visible:
-                self.objButton.draw(self.screen, BLACK)
-                self.controlsButton.draw(self.screen, BLACK)
-                self.mechanicsButton.draw(self.screen, BLACK)
-                self.powerupsButton.draw(self.screen, BLACK)
-                self.strategyButton.draw(self.screen, BLACK)
-                self.backbutton.draw(self.screen, BLACK)
-            
+                self.draw_game_buttons()
+                self.handle_button_click_coop(event)
             elif self.control_visible:
                 self.p1button.draw(self.screen, BLACK)
                 self.p2button.draw(self.screen, BLACK)
                 self.backbutton.draw(self.screen, BLACK)
-
+                self.handle_button_click_controls(event)
+            
             pygame.display.update()
 
     def update_background(self):
@@ -163,23 +154,6 @@ class InstructionsMenu:
         elif self.controlsButton.is_clicked(event):
             self.coop_button_visible = False
             self.control_visible = True
-            if self.p1button.is_clicked(event):
-                self.current_message = (
-                    "Left and Right key: You can rotate your spaceship left or right to aim at the asteroids.\n"
-                    "Upward key: This button moves your spaceship forward in the direction it's pointing.\n"
-                    "Movement is based on real physics, so you will continue drifting in one direction until you apply thrust in another direction.\n"
-                    "Space Key: Shoots bullets from your spaceship to break the asteroids into smaller pieces or destroy them entirely."
-                )  
-            elif self.p2button.is_clicked(event):
-                self.current_message = (
-                    "A and D: You can rotate your spaceship left or right to aim at the asteroids.\n"
-                    "W: This button moves your spaceship forward in the direction it's pointing.\n"
-                    "Movement is based on real physics, so you will continue drifting in one direction until you apply thrust in another direction.\n"
-                    "Shift key: Shoots bullets from your spaceship to break the asteroids into smaller pieces or destroy them entirely."
-                )  
-            elif self.backbutton.is_clicked(event):
-                self.coop_button_visible = True
-                self.control_visible = False
         elif self.mechanicsButton.is_clicked(event):
             self.current_message = (
                 "You have three lives to start with, and collision with any asteroid or bullets from each other. After each collision, there will be a three second invulnerability.\n"
@@ -200,6 +174,33 @@ class InstructionsMenu:
                 "Stay near the center of the screen to avoid wrapping into a dangerous situation\n"
                 "Focus on controlling your speed and direction since momentum can make your ship difficult to control\n"
             )
+
+    def handle_button_click_controls(self, event):
+        if self.p1button.is_clicked(event):
+            self.current_message = (
+                "Left and Right key: You can rotate your spaceship left or right to aim at the asteroids.\n"
+                "Upward key: This button moves your spaceship forward in the direction it's pointing.\n"
+                "Movement is based on real physics, so you will continue drifting in one direction until you apply thrust in another direction.\n"
+                "Space Key: Shoots bullets from your spaceship to break the asteroids into smaller pieces or destroy them entirely."
+            )  
+        elif self.p2button.is_clicked(event):
+            self.current_message = (
+                "A and D: You can rotate your spaceship left or right to aim at the asteroids.\n"
+                "W: This button moves your spaceship forward in the direction it's pointing.\n"
+                "Movement is based on real physics, so you will continue drifting in one direction until you apply thrust in another direction.\n"
+                "Shift key: Shoots bullets from your spaceship to break the asteroids into smaller pieces or destroy them entirely."
+            )  
+        elif self.backbutton.is_clicked(event):
+            self.coop_button_visible = True
+            self.control_visible = False
+
+    def draw_game_buttons(self):
+        self.objButton.draw(self.screen, BLACK)
+        self.controlsButton.draw(self.screen, BLACK)
+        self.mechanicsButton.draw(self.screen, BLACK)
+        self.powerupsButton.draw(self.screen, BLACK)
+        self.strategyButton.draw(self.screen, BLACK)
+        self.backbutton.draw(self.screen, BLACK)
 
     def display_message(self, message):
         max_width = self.message_box_rect.width - 20  # Allow some margin for text wrapping
