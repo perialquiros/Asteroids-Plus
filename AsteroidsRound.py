@@ -35,7 +35,7 @@ class Game:
         # all variables for the ship class
         self.game_timer = 0
         self.spawn_timer_ship = 0
-        self.spawn_delay_ship = 10
+        self.spawn_delay_ship = 30
         self.spawn_delay_reg_bullet = 2
         self.spawn_delay_sp_bullet = 13
 
@@ -98,20 +98,37 @@ class Game:
         self.asteroid_alg()
         # check all collision for asteroid
         for asteroid in self.asteroids:
-           if asteroid.check_collision(self.player_bullets, self.ship_bullets):
-            self.play_explosion(asteroid.rect.center, asteroid.size)
-            if asteroid.width != SM_ASTEROID_SIZE:
-                self.player.score += 10
-                new_size = asteroid.getSizeBelow()
-                new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
-                self.spawn_asteroid(new_size, new_x, new_y)
-                self.spawn_asteroid(new_size, new_x, new_y)
-            else:
-                self.player.score += 20
+            # collision with player bullets
+            if asteroid.check_collision(self.player_bullets):
+                self.play_explosion(asteroid.rect.center, asteroid.size)
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    self.player.score += 10
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                else: # small asteroid - no split - extra points
+                    self.player.score += 20
+            # collision with alien ship bullets no points for player
+            if asteroid.check_collision(self.ship_bullets):
+                self.play_explosion(asteroid.rect.center, asteroid.size)
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
+            # collision with alien ship itself, no points for player, and do not destroy alien ship
+            if asteroid.check_collision(self.ships, False):
+                self.play_explosion(asteroid.rect.center, asteroid.size)
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
         
-        # check all collision for saucer
+        # check all collision for alien ship ~ in our version, alien ships plow through asteroids
         for ship in self.ships:
-            if ship.check_collision(self.player_bullets, self.asteroids, self.player):
+            if ship.check_collision(self.player_bullets):
                 self.play_explosion(ship.rect.center, 60)
                 self.player.score += 30
 
@@ -222,23 +239,22 @@ class Game:
                 self.spawn_asteroid(size)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
             elif current_minute == 3:
-                self.spawn_asteroid(size)
                 self.spawn_asteroid(MED_ASTEROID_SIZE)
-                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(SM_ASTEROID_SIZE)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
             elif current_minute == 4:
                 self.asteroid_spawn_delay = 0.3
-                self.spawn_asteroid(size)
-                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(SM_ASTEROID_SIZE)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
             elif current_minute == 6:
                 self.asteroid_spawn_delay = 0.2
-                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(SM_ASTEROID_SIZE)
                 self.spawn_asteroid(MED_ASTEROID_SIZE)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
             else:
+                self.spawn_asteroid(size)
                 self.spawn_asteroid(size)
                 self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
