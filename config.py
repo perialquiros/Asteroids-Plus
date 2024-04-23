@@ -19,7 +19,9 @@ FPS = 60
 
 #layers
 PLAYER_LAYER = 4
+SHIP_LAYER = 3
 ASTEROID_LAYER = 3
+SHIP_BULLET_LAYER = 2
 
 #Lives
 PLAYER_LIVES = 3
@@ -101,7 +103,7 @@ SHIP_D_BUTTON = [
 SELECTED_SHIP = 0 # default ship-a
 
 # images for explosion animation
-"""
+
 EXPLOSION = [
     pygame.image.load('Images/Explosions/explosions-a1.png').convert_alpha(),
     pygame.image.load('Images/Explosions/explosions-a2.png').convert_alpha(),
@@ -110,7 +112,7 @@ EXPLOSION = [
     pygame.image.load('Images/Explosions/explosions-a5.png').convert_alpha(),
     pygame.image.load('Images/Explosions/explosions-a6.png').convert_alpha()
 ]
-"""
+
 
 # player bullet variables
 BULLET_SPEED = 4
@@ -118,8 +120,7 @@ BULLET_COLOR = WHITE
 BULLET_SIZE = 5
 SPECIAL_BULLET_COLOR = RED
 SPECIAL_BULLET_SPEED = 4
-
-SPAWN_DELAY_POWERUP = 30
+SPAWN_DELAY_POWERUP = 10
 
 # initialize Pygame mixer
 import pygame

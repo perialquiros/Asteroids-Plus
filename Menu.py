@@ -10,9 +10,11 @@ import pygame.font
 class Menu:
     def __init__(self):
         pygame.init()
-
-        self.title_font = pygame.font.Font(None, 65)
-        self.title_text = self.title_font.render("ASTEROIDS+", True, WHITE)
+        self.title = "Asteroids   Plus"
+        self.title_font = pygame.font.Font('Galaxus-z8Mow.ttf', 100)
+        self.title_text = self.title_font.render(self.title, True, WHITE)
+        self.title_y = 150
+        self.title_y_velocity = 0.20
         # load screen and images for background
         self.screen = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
         self.background = pygame.image.load('Images/backgrounds/space-backgound.png').convert_alpha()
@@ -28,22 +30,31 @@ class Menu:
         self.clock = pygame.time.Clock()
 
         self.running = True
-        self.playButton = Button((WIN_WIDTH/2 - 50, WIN_HEIGHT/2 - 150), (100, 100), WHITE, "PLAY")
+        self.playButton = Button((WIN_WIDTH/2 - 130, WIN_HEIGHT/2 - 150), (100, 100), WHITE, "PLAY")
         self.shipSelect = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2), (100, 100), WHITE, "SHIP", 'Images/ships/ship-a/ship-a-damaged.png')
         self.exitButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 150), (100, 100), WHITE, "EXIT")
         self.statButton = Button((WIN_WIDTH/2 -50, WIN_HEIGHT/2 + 300), (100, 100), WHITE, "STATS")
         self.instructionsButton = Button((WIN_WIDTH - 120, WIN_HEIGHT - 70), (100, 50), WHITE, "Help")
-        self.coOpButton = Button((WIN_WIDTH/2-50, WIN_HEIGHT/2 -300), (100, 100), WHITE, "CO-OP")
+        self.coOpButton = Button((WIN_WIDTH/2 + 20, WIN_HEIGHT/2 - 150), (100, 100), WHITE, "CO-OP")
 
+        
     def draw(self):
         self.screen.blit(self.background, (0,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+        
+        self.title_y += self.title_y_velocity
+        if self.title_y >= WIN_HEIGHT - 635:
+            self.title_y = WIN_HEIGHT - 635  # Limit the title's position to the bottom of the screen
+            self.title_y_velocity = -0.20  # Reverse direction when reaching bottom
+        elif self.title_y <= 150:
+            self.title_y = 150  # Limit the title's position to the top of the screen
+            self.title_y_velocity = 0.20 
 
-        # Draw title text
-        title_rect = self.title_text.get_rect(center=(WIN_WIDTH/2, 50)) 
+        # Add the following lines
+        title_rect = self.title_text.get_rect(center=(WIN_WIDTH/2, self.title_y)) 
         self.screen.blit(self.title_text, title_rect)
-       
+
         self.clock.tick(FPS) #update the screen based on FPS
         pygame.mouse.set_visible(True)
         
@@ -92,6 +103,7 @@ class Menu:
                         g.new() #create a new game everytime we run
                         while g.running:
                             g.main()
+
                 if self.shipSelect.is_clicked(event):
                     select = ShipSelection()
                     selected_ship = select.main()
