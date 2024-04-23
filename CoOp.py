@@ -1,14 +1,15 @@
 import pygame
+import sys
+import time
+
 from player import *
 from ship import *
 from config import *
 from asteroid import *
-import sys
 from powerups import *
-import time
 from leaderboard import *
-import time
 from PlayerCoOp import *
+from explosion import *
 
 
 class CoOp:
@@ -35,13 +36,12 @@ class CoOp:
         self.font = pygame.font.Font('Galaxus-z8Mow.ttf', 32)
         self.running = True
 
-        #init sprite sheets
+        #init sprite groups
         self.asteroids = pygame.sprite.Group()
-
         self.powerups = pygame.sprite.Group()
-        
         self.player_bullets = pygame.sprite.Group()
         self.player_special_bullets = pygame.sprite.Group()
+        self.players = pygame.sprite.Group()
 
         # update all variables
         self.spawn_timer_powerup = 0
@@ -80,7 +80,9 @@ class CoOp:
             ship_image_list = SHIP_D
 
         self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2+5, (self.Height/TILESIZE)/2, 1, SHIP_A)
+        self.players.add(self.player1)
         self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2-10, (self.Height/TILESIZE)/2, 2, SHIP_B)
+        self.players.add(self.player1)
 
     #create background screen for game
     def draw(self):
@@ -123,40 +125,77 @@ class CoOp:
         if self.bg_stars_x2 + WIN_WIDTH < 0:
             self.bg_stars_x2 = WIN_WIDTH
     
+    # asteroid algorithm, increase difficulty per minute
     def asteroid_alg(self):
         size = random.choice([BIG_ASTEROID_SIZE, MED_ASTEROID_SIZE, SM_ASTEROID_SIZE])
-
-        if self.game_timer >= 30:
-            self.asteroid_spawn_delay = 0.9
-        if self.game_timer >= 60:
-            self.asteroid_spawn_delay = 0.8
+        current_minute = self.game_timer // (60 * FPS) 
 
         if self.asteroid_timer >= self.asteroid_spawn_delay * FPS:
-            self.spawn_asteroid(size)
+            if current_minute == 1:
+                self.asteroid_spawn_delay = 0.6
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 2:
+                self.asteroid_spawn_delay = 0.4
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 3:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 4:
+                self.asteroid_spawn_delay = 0.3
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            elif current_minute == 6:
+                self.asteroid_spawn_delay = 0.2
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(MED_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+                self.spawn_asteroid(BIG_ASTEROID_SIZE)
+            else:
+                self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
             self.asteroid_timer = 0  # Reset the timer after spawning an asteroid
+
+    # animate explosion
+    def play_explosion(self, position, size):
+        explosion = Explosion(position, size)
+        self.all_sprites.add(explosion)
             
     def update(self):
         #game loop updates
         self.all_sprites.update()
         self.update_background()
-        #self.spawn_timer_ship += 1
         self.game_timer += 1
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
-      
+
+        # run asteroid alg
         self.asteroid_alg()
+
+        # check all collision for asteroid
+        for asteroid in self.asteroids:
+            if asteroid.check_collision(self.player_bullets):
+                self.play_explosion(asteroid.rect.center, asteroid.size)
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                else:
+                    pass
                
         # check if player obtained the powerup
         for powerup in self.powerups:
             powerup.update()       
             
-        #if(pygame.sprite.groupcollide(self.player_bullets, self.player2, True, False)):
-          #  self.player2.lives-=1
-        
-        #if(pygame.sprite.groupcollide(self.player_special_bullets, self.player1, True, False)):
-         #   self.player1.lives-=1
-        
-         #check bullet collisions of opponent
+
     
         for bullet2 in self.player_special_bullets:
             if pygame.sprite.collide_rect(self.player1, bullet2):
@@ -177,14 +216,6 @@ class CoOp:
                     self.playing = False
                     self.dead_player = 2
         
-        
-        for asteroid in self.asteroids:
-            if asteroid.check_collision(self.player_bullets, self.player_special_bullets):
-                if asteroid.width != SM_ASTEROID_SIZE:
-                    new_size = asteroid.getSizeBelow()
-                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
-                    self.spawn_asteroid(new_size, new_x, new_y)
-                    self.spawn_asteroid(new_size, new_x, new_y)
             
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
@@ -197,12 +228,13 @@ class CoOp:
         #    self.spawn_delay_sp_bullet -= 5
         #    self.game_timer = 0
         
+
         # spawn powerups based off the game time
-       # if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
-       #     powerup = Powerups(self.all_sprites, self.player)
-        #    self.all_sprites.add(powerup)
-        #    self.powerups.add(powerup)
-        #   self.spawn_timer_powerup = 0
+        if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
+            powerup = Powerups(self.all_sprites, self.players)
+            self.all_sprites.add(powerup)
+            self.powerups.add(powerup)
+            self.spawn_timer_powerup = 0
     
     def main(self):
         # Start the background music
@@ -236,12 +268,16 @@ class CoOp:
                 self.all_sprites.draw(self.screen) 
 
                 if(self.dead_player == 1):
-                    text_surface = self.font.render("PLAYER 2 WINS", True, (WHITE))  
+                    text_surface = self.font.render("PLAYER 2 WINS", True, (WHITE)) 
+                    # Center text
+                    text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                    self.screen.blit(text_surface, text_rect) 
                 if(self.dead_player == 2):
-                    text_surface = self.font.render("PLAYER 1 WINS", True, (WHITE))  
-                # Center text
-                text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
-                self.screen.blit(text_surface, text_rect)
+                    text_surface = self.font.render("PLAYER 1 WINS", True, (WHITE))
+                    # Center text
+                    text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                    self.screen.blit(text_surface, text_rect)  
+                    
 
                 # Update the display 
                 pygame.display.update()
