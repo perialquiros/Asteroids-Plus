@@ -88,9 +88,13 @@ class CoOp:
         self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
         self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
         self.all_sprites.draw(self.screen) 
+        
         for asteroid in self.asteroids:
             self.screen.blit(asteroid.image, asteroid.rect)
+        
         self.clock.tick(FPS) #update the screen based on FPS
+        minutes = self.game_timer // (60 * FPS)
+        seconds = (self.game_timer // FPS) % 60
         
         player_1_lives_text = self.font.render('Player 1 Lives: ' + str(self.player1.lives), False, WHITE)
         player_2_lives_text = self.font.render('Player 2 Lives: ' + str(self.player2.lives), False, WHITE)
@@ -98,6 +102,11 @@ class CoOp:
         # Draw the lives text
         self.screen.blit(player_1_lives_text, (10, 10))
         self.screen.blit(player_2_lives_text, (10,40))
+        
+         # draw clock
+        time_text = self.font.render(f"Time: {minutes:02}-{seconds:02}", True, WHITE)
+        time_rect = time_text.get_rect(topright=(WIN_WIDTH - 10, 10))
+        self.screen.blit(time_text, time_rect)
 
         pygame.display.update()
 
@@ -141,8 +150,42 @@ class CoOp:
         for powerup in self.powerups:
             powerup.update()       
             
-        pygame.sprite.groupcollide(self.player_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
-        pygame.sprite.groupcollide(self.player_special_bullets, self.asteroids, True, True, pygame.sprite.collide_circle)
+        #if(pygame.sprite.groupcollide(self.player_bullets, self.player2, True, False)):
+          #  self.player2.lives-=1
+        
+        #if(pygame.sprite.groupcollide(self.player_special_bullets, self.player1, True, False)):
+         #   self.player1.lives-=1
+        
+         #check bullet collisions of opponent
+    
+        for bullet2 in self.player_special_bullets:
+            if pygame.sprite.collide_rect(self.player1, bullet2):
+                # Remove the ship and the bullet from the game
+                self.player1.lives-=1
+                bullet2.kill()
+                if(self.player1.lives <=0):
+                    self.playing = False
+                    self.dead_player = 1
+                    
+        
+        for bullet1 in self.player_bullets:
+            if pygame.sprite.collide_rect(self.player2, bullet1):
+                # Remove the bullet from the game
+                self.player2.lives-=1
+                bullet1.kill()
+                if(self.player2.lives <=0):
+                    self.playing = False
+                    self.dead_player = 2
+        
+        
+        for asteroid in self.asteroids:
+            if asteroid.check_collision(self.player_bullets, self.player_special_bullets):
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
+            
 
         # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
         #
@@ -188,7 +231,7 @@ class CoOp:
                 self.screen.blit(self.background, (0,0))
                 self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
                 self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
-                self.all_sprites.update()
+                #self.all_sprites.update()
                 self.update_background()
                 self.all_sprites.draw(self.screen) 
 

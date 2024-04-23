@@ -146,6 +146,9 @@ class Game:
                 self.spawn_delay_ship -= 5
                 self.spawn_delay_reg_bullet -= 5
             self.spawn_delay_sp_bullet -= 5
+            
+            #points given each minute
+            self.player.score+=500
             self.game_timer = 0
         
         # spawn powerups based off the game time
@@ -154,6 +157,8 @@ class Game:
             self.all_sprites.add(powerup)
             self.powerups.add(powerup)
             self.spawn_timer_powerup = 0
+            
+        
         
     #create background screen for game
     def draw(self):
@@ -246,34 +251,35 @@ class Game:
         leaderboard = LeaderBoard()
         leaderboard.save_highscore(self.player.score)
         if (leaderboard.check_new_highscore(self.player.score)):
-            t_end = time.time() + 3
-            while time.time() < t_end:
-                self.screen.blit(self.background, (0,0))
-                self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
-                self.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
-                self.all_sprites.update()
-                self.update_background()
-                self.all_sprites.draw(self.screen) 
+           # t_end = time.time() + 3
+           # while time.time() < t_end:
+               # self.screen.blit(self.background, (0,0))
+                #self.screen.blit(self.bg_stars, (self.bg_stars_x1 ,0))
+                #s#elf.screen.blit(self.bg_stars, (self.bg_stars_x2 ,0))
+                #s#e#lf.all_sprites.update()
+                #self.update_background()
+                #self.all_sprites.draw(self.screen) 
 
-                text_surface = self.font.render("NEW HIGHSCORE!", True, (WHITE))  # Black text
+                text_surface = self.font.render("NEW HIGHSCORE!", True, (255, 255, 255))  # Black text
 
                 # Center text
-                text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                text_rect = text_surface.get_rect(center=(WIN_WIDTH//2, (WIN_HEIGHT//2)-100))
                 self.screen.blit(text_surface, text_rect)
 
                 # Update the display 
-                pygame.display.update()
+               # pygame.display.update()
 
 
     def game_over_screen(self):
         self.screen.fill((0, 0, 0))  # Fill screen with black color
+        self.updateLeaderboard()
         game_over_text = self.font.render("Game Over", True, (255, 255, 255))
         score_text = self.font.render("Score: " + str(self.player.score), True, (255, 255, 255))
         restart_text = self.font.render("Press R to restart", True, (255, 255, 255))
         menu_text = self.font.render("Press Q for menu", True, (255, 255, 255))  
         # Position text on the screen
-        game_over_rect = game_over_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 - 50))
-        score_rect = score_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
+        game_over_rect = game_over_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2))
+        score_rect = score_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2-50))
         restart_rect = restart_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 + 50))
         menu_rect = menu_text.get_rect(center=(WIN_WIDTH // 2, WIN_HEIGHT // 2 + 100))  # Adjust position as needed
         # Blit text onto the screen
@@ -302,7 +308,7 @@ class Game:
 
             # Check for game over condition
                 if self.player.lives <= 0:
-                    self.updateLeaderboard()
+                    
                     self.game_timer = 0   # Reset game time to 0:00
                     self.playing = False  # Exit the game loop
 
@@ -327,7 +333,6 @@ class Game:
                             return 0
 
     # Stop music before quitting
-        self.updateLeaderboard()
         MUSIC_CHANNEL.stop()
         pygame.quit()
         sys.exit()
