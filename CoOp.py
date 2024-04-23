@@ -6,7 +6,7 @@ from player import *
 from ship import *
 from config import *
 from asteroid import *
-from powerups import *
+from powerupsCoop import *
 from leaderboard import *
 from PlayerCoOp import *
 from explosion import *
@@ -44,7 +44,7 @@ class CoOp:
         self.players = pygame.sprite.Group()
 
         # update all variables
-        #self.spawn_timer_powerup = 0
+        self.spawn_timer_powerup = 0
         self.game_timer = 0
         
         self.dead_player = 0 # 1 means player 1 died, 2 means player 2 died
@@ -176,7 +176,7 @@ class CoOp:
         self.update_background()
         self.game_timer += 1
         self.asteroid_timer += 1
-        #self.spawn_timer_powerup += 1
+        self.spawn_timer_powerup += 1
 
         # run asteroid alg
         self.asteroid_alg()
@@ -194,8 +194,8 @@ class CoOp:
                     pass
                
         # check if player obtained the powerup
-        #for powerup in self.powerups:
-        #    powerup.update()       
+        for powerup in self.powerups:
+            powerup.update()       
             
 
     
@@ -232,11 +232,11 @@ class CoOp:
         
 
         # spawn powerups based off the game time
-        #if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
-        #    powerup = Powerups(self.all_sprites, self.players)
-        #    self.all_sprites.add(powerup)
-        #    self.powerups.add(powerup)
-        #    self.spawn_timer_powerup = 0
+        if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
+            powerup = Powerups(self.all_sprites, self.players)
+            self.all_sprites.add(powerup)
+            self.powerups.add(powerup)
+            self.spawn_timer_powerup = 0
     
     def main(self):
         # Start the background music
