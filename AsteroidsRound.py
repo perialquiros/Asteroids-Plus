@@ -302,6 +302,7 @@ class Game:
 
             # Check for game over condition
                 if self.player.lives <= 0:
+                    self.updateLeaderboard()
                     self.game_timer = 0   # Reset game time to 0:00
                     self.playing = False  # Exit the game loop
 
