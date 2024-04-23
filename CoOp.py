@@ -41,6 +41,7 @@ class CoOp:
         self.powerups = pygame.sprite.Group()
         self.player_bullets = pygame.sprite.Group()
         self.player_special_bullets = pygame.sprite.Group()
+        self.players = pygame.sprite.Group()
 
         # update all variables
         self.spawn_timer_powerup = 0
@@ -79,7 +80,9 @@ class CoOp:
             ship_image_list = SHIP_D
 
         self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2+5, (self.Height/TILESIZE)/2, 1, SHIP_A)
+        self.players.add(self.player1)
         self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2-10, (self.Height/TILESIZE)/2, 2, SHIP_B)
+        self.players.add(self.player1)
 
     #create background screen for game
     def draw(self):
@@ -160,7 +163,6 @@ class CoOp:
         #game loop updates
         self.all_sprites.update()
         self.update_background()
-        #self.spawn_timer_ship += 1
         self.game_timer += 1
         self.asteroid_timer += 1
         self.spawn_timer_powerup += 1
@@ -185,22 +187,12 @@ class CoOp:
             powerup.update()       
             
 
-        # increase difficulty - every one minute increase difficulty and both ship and bullet time of spawn decrease by 5
-        #
-        #if self.game_timer >= 60 and self.spawn_delay_sp_bullet > 30:
-            #add a screen display of difficult level currently - to do
-        #    if self.spawn_delay_ship > 25:
-        #        self.spawn_delay_ship -= 5
-        #        self.spawn_delay_reg_bullet -= 5
-        #    self.spawn_delay_sp_bullet -= 5
-        #    self.game_timer = 0
-        
         # spawn powerups based off the game time
-       # if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
-       #     powerup = Powerups(self.all_sprites, self.player)
-        #    self.all_sprites.add(powerup)
-        #    self.powerups.add(powerup)
-        #   self.spawn_timer_powerup = 0
+        if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
+            powerup = Powerups(self.all_sprites, self.players)
+            self.all_sprites.add(powerup)
+            self.powerups.add(powerup)
+            self.spawn_timer_powerup = 0
     
     def main(self):
         # Start the background music
@@ -234,12 +226,16 @@ class CoOp:
                 self.all_sprites.draw(self.screen) 
 
                 if(self.dead_player == 1):
-                    text_surface = self.font.render("PLAYER 2 WINS", True, (WHITE))  
+                    text_surface = self.font.render("PLAYER 2 WINS", True, (WHITE)) 
+                    # Center text
+                    text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                    self.screen.blit(text_surface, text_rect) 
                 if(self.dead_player == 2):
-                    text_surface = self.font.render("PLAYER 1 WINS", True, (WHITE))  
-                # Center text
-                text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
-                self.screen.blit(text_surface, text_rect)
+                    text_surface = self.font.render("PLAYER 1 WINS", True, (WHITE))
+                    # Center text
+                    text_rect = text_surface.get_rect(center=(WIN_WIDTH/2, WIN_HEIGHT/2))
+                    self.screen.blit(text_surface, text_rect)  
+                    
 
                 # Update the display 
                 pygame.display.update()
