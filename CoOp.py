@@ -44,7 +44,7 @@ class CoOp:
         self.players = pygame.sprite.Group()
 
         # update all variables
-        self.spawn_timer_powerup = 0
+        #self.spawn_timer_powerup = 0
         self.game_timer = 0
         
         self.dead_player = 0 # 1 means player 1 died, 2 means player 2 died
@@ -135,9 +135,11 @@ class CoOp:
                 self.asteroid_spawn_delay = 0.6
                 self.spawn_asteroid(size)
                 self.spawn_asteroid(size)
+                self.spawn_asteroid(size)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
             elif current_minute == 2:
                 self.asteroid_spawn_delay = 0.4
+                self.spawn_asteroid(size)
                 self.spawn_asteroid(size)
                 self.spawn_asteroid(size)
                 self.spawn_asteroid(BIG_ASTEROID_SIZE)
@@ -174,7 +176,7 @@ class CoOp:
         self.update_background()
         self.game_timer += 1
         self.asteroid_timer += 1
-        self.spawn_timer_powerup += 1
+        #self.spawn_timer_powerup += 1
 
         # run asteroid alg
         self.asteroid_alg()
@@ -192,8 +194,8 @@ class CoOp:
                     pass
                
         # check if player obtained the powerup
-        for powerup in self.powerups:
-            powerup.update()       
+        #for powerup in self.powerups:
+        #    powerup.update()       
             
 
     
@@ -230,11 +232,11 @@ class CoOp:
         
 
         # spawn powerups based off the game time
-        if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
-            powerup = Powerups(self.all_sprites, self.players)
-            self.all_sprites.add(powerup)
-            self.powerups.add(powerup)
-            self.spawn_timer_powerup = 0
+        #if self.spawn_timer_powerup >= SPAWN_DELAY_POWERUP * FPS:
+        #    powerup = Powerups(self.all_sprites, self.players)
+        #    self.all_sprites.add(powerup)
+        #    self.powerups.add(powerup)
+        #    self.spawn_timer_powerup = 0
     
     def main(self):
         # Start the background music
