@@ -1,0 +1,27 @@
+Menu:
+
+- Coop and single player button works and is able to open the game
+- Help button opens up a new window with all buttons display messages when clicked
+- The ship button opens the selection screen for different player designs, when chosen, the game player will show as that design
+- Exit button will quit the application
+- Stats button will show the leaderboard for top five scores and players but only limited to be the played on the same computer
+
+Survival/Single-player mode:
+
+- Player can control the rotation using the left and right key, move forward using the upward key, and shoot using space key
+- Player has three lives to start with, and collision with any asteroid, flying saucers, or their bullets will deduct a life. After each collision, there will be a three second invulnerability
+- The game field is a wrap-around screen, meaning if you go off one side, you reappear on the opposite side, same goes for asteroids, flying saucers, etc..
+- Asteroids come in various sizes. Large asteroids break into two medium ones when shot, and medium ones break into two small ones. Small asteroids disappear when shot
+- Flying saucer will appear and shoot at the player, one kind of bullet will go in a random direction while another kind will target the player location
+- Powerups will spawn once in a while randomly, and picking it up will result in different effects – Shield provides invulnerability for five seconds, Bomb destroys everything on the screen, Plus sign gains an additional life
+- Sound effects will occur when player shoot, collided, destroyed asteroids, picked up powerups, and ships spawned
+- Points will be scored when destroying asteroids of different sizes and flying saucers
+- Once the player lost all three lives or user clicks exit, the exit screen with pop up, where clicking r will restart the game and m to return to the menu
+
+Coop mode:
+
+- Player1 can control the rotation using the left and right key, move forward using the upward key, and shoot using space key
+- Player 2 can control the rotation using A and D, move forward using W, and shoot using shift key
+- Each player has three lives to start with, and collision with any asteroid or player bullets will deduct a life. After each collision, there will be a three second invulnerability
+- The game field is a wrap-around screen, meaning if you go off one side, you reappear on the opposite side, all other objects are destroyed once moving outside of the screen
+- Powerups and sound effects will be the same as single player mode

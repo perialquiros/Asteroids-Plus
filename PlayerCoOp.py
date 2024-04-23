@@ -39,6 +39,7 @@ class PlayerCoOp(pygame.sprite.Sprite,):
         self.rect.x = self.x
         self.rect.y = self.y
         self.player_bullets = self.game.player_bullets
+        self.player_special_bullets = self.game.player_special_bullets
 
         #acceleration
         self.velocity = pygame.math.Vector2(0, 0)  # Initialize velocity vector
@@ -67,7 +68,7 @@ class PlayerCoOp(pygame.sprite.Sprite,):
         bullet.vel_x = math.cos(rad_angle) * bullet.speed  # Calculate x velocity based on angle
         bullet.vel_y = math.sin(rad_angle) * bullet.speed  # Calculate y velocity based on angle
         self.game.all_sprites.add(bullet)
-        self.player_bullets.add(bullet)
+        self.player_special_bullets.add(bullet)
   
     #update player sprite
     def update(self):
@@ -82,6 +83,8 @@ class PlayerCoOp(pygame.sprite.Sprite,):
         #check collisions
         self.collide(self.game.asteroids)
         
+        
+       
 
         #update acceleration
         self.rect.center += self.velocity  # Apply velocity to the player's position
@@ -116,11 +119,13 @@ class PlayerCoOp(pygame.sprite.Sprite,):
         time_since_last_shot = current_time - self.last_shot_time
         if(self.playerNum==1):
             if keys[pygame.K_SPACE] and time_since_last_shot >= 5000:  
+
                 self.shoot_regular_bullet()  # Shoot regular bullet when space key is pressed
                 PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
                 self.last_shot_time = current_time  # Update the last shot time
         if(self.playerNum==2):
             if keys[pygame.K_LSHIFT] and time_since_last_shot >= 5000:
+
                 self.shoot_special_bullet()
                 PLAYER_CHANNEL.play(PLAYER_BULLET_MUSIC)
                 self.last_shot_time = current_time  # Update the last shot time
