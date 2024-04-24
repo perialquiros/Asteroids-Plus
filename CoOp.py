@@ -192,6 +192,17 @@ class CoOp:
                     self.spawn_asteroid(new_size, new_x, new_y)
                 else:
                     pass
+
+        for asteroid in self.asteroids:
+            if asteroid.check_collision(self.player_special_bullets):
+                self.play_explosion(asteroid.rect.center, asteroid.size)
+                if asteroid.width != SM_ASTEROID_SIZE:
+                    new_size = asteroid.getSizeBelow()
+                    new_x, new_y = asteroid.rect.centerx, asteroid.rect.centery
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                    self.spawn_asteroid(new_size, new_x, new_y)
+                else:
+                    pass
                
         # check if player obtained the powerup
         for powerup in self.powerups:
