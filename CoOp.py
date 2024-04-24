@@ -82,7 +82,7 @@ class CoOp:
         self.player1 = PlayerCoOp(self, (self.Width/TILESIZE)/2+5, (self.Height/TILESIZE)/2, 1, SHIP_A)
         self.players.add(self.player1)
         self.player2 = PlayerCoOp(self,(self.Width/TILESIZE)/2-10, (self.Height/TILESIZE)/2, 2, SHIP_B)
-        self.players.add(self.player1)
+        self.players.add(self.player2)
 
     #create background screen for game
     def draw(self):
