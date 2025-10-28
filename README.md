@@ -1,9 +1,10 @@
 # Asteriods+ : A Replica of Asteriods
 ### Jericho Orienza, Prince Nahar, Amy Ollomani, Iris Ye
+### additional changes by Adriel Alquiros
 ![image](https://github.com/cis3296s24/prj--asteroid-replica/assets/93217801/ea454382-a95f-4d4f-930e-7448efa29b34)
 
 ## Description
-​​The goal of this project is to recreate the popular Atari game, Asteroids. This classic arcade game has the user play as a spaceship moving around a 2D top view open space in which the user has to dodge and destroy asteroids hurdling towards them. Destroying an asteroid has the chance to drop a power up for the user such as extra life, deflector shields, and a big bomb. Along with survival mode, Asteroid Plus will include a co-op mode where you can play against a friend to see who can survive the longest! While Survival mode focuses on obtaining a high score through destroying as many ships and asteroids as possible, co-op mode limits player shooting and increases asteroid spawning. In co-op mode, the name of the game is to dodge, whose the better space pilot?! 
+The goal of this project is to add onto the final project submission from a previous group taking Software Design. The change made is that the title displays the title of the latest Reddit post on the Temple subreddit instead of Asteroids Plus.
 
 ## How to Install and Run
 ### Prerequisites
