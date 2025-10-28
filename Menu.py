@@ -13,10 +13,10 @@ class Menu:
     def __init__(self):
         pygame.init()
 
-        client = redditwarp.SYNC.Client()
-        reddit = next(client.p.subreddit.pull.new('Temple', amount=1))
+        self.client = redditwarp.SYNC.Client()
+        self.reddit = next(self.client.p.subreddit.pull.new('Temple', amount=1))
 
-        self.title = "rTemple says " + reddit.title
+        self.title = "rTemple says " + self.reddit.title
         self.title_font = pygame.font.Font('Galaxus-z8Mow.ttf', 50)
         self.title_text = self.title_font.render(self.title, True, WHITE)
         self.title_y = 150
