@@ -6,12 +6,18 @@ from leaderboard import *
 from instructions import *
 from CoOp import *
 import pygame.font
+import redditwarp
+import redditwarp.SYNC
 
 class Menu:
     def __init__(self):
         pygame.init()
-        self.title = "Asteroids   Plus"
-        self.title_font = pygame.font.Font('Galaxus-z8Mow.ttf', 100)
+
+        client = redditwarp.SYNC.Client()
+        reddit = next(client.p.subreddit.pull.new('Temple', amount=1))
+
+        self.title = "rTemple says " + reddit.title
+        self.title_font = pygame.font.Font('Galaxus-z8Mow.ttf', 50)
         self.title_text = self.title_font.render(self.title, True, WHITE)
         self.title_y = 150
         self.title_y_velocity = 0.20
@@ -87,6 +93,11 @@ class Menu:
     def play(self):
         selected_ship = 0
         while True:
+
+            # load reddit
+            # print(self.reddit.title)
+            # print(self.reddit.permalink)
+
             m.draw()
             m.update_background()
             
